@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   },
   largeCircle: {
     position: "absolute",
-    bottom: deviceHeight / 4,
-    left: deviceWidth / 1.5,
+    bottom: -(deviceHeight / 4),
+    left: -(deviceWidth / 1.5),
     width: deviceWidth / 0.8,
     height: deviceWidth / 0.8,
     borderRadius: deviceWidth / 1.6,
@@ -67,8 +67,8 @@ const styles = StyleSheet.create({
   },
   smallCircle: {
     position: "absolute",
-    top: deviceHeight / 8,
-    right: deviceWidth / 4,
+    top: -(deviceHeight / 8),
+    right: -(deviceWidth / 4),
     width: deviceWidth / 1.6,
     height: deviceWidth / 1.6,
     borderRadius: deviceWidth / 3.2,
@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
   },
   borderCircle: {
     position: "absolute",
-    bottom: deviceHeight / 4,
-    left: deviceWidth / 1.5,
+    bottom: -(deviceHeight / 4),
+    left: -(deviceWidth / 1.5),
     width: deviceWidth / 0.9,
     height: deviceWidth / 0.9,
     borderRadius: deviceWidth / 1.9,

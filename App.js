@@ -1,7 +1,7 @@
 import React from "react";
 import { AppRegistry } from "react-native";
 
-import LoginSignup from "./components/LoginSignup";
+import LoginSignup from "./js/LoginSignup";
 
 const App = () => {
   return (

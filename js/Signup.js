@@ -14,16 +14,17 @@ const TriangleShape = ({ color }) => {
   );
 };
 
-
 const Login = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
 
   const handleLogin = () => {
     // TODO: Login the user
   };
 
-  const handleSignup = () => {
+  const handleSignUp = () => {
     // TODO: Sign up the user
   };
 
@@ -39,10 +40,18 @@ const Login = () => {
     <View style={styles.container}>
       <TriangleShape color="#79124A" />
       <Image style={styles.image} source={logo1} />
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Create an account</Text>
       <View style={styles.inputContainer}>
         <View style={styles.iconInputContainer}>
-          <Icon name="envelope" size={20} color="#ccc" style={styles.inputIcon} />
+          <Icon name="person" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Name"
+            onChangeText={setName}
+          />
+        </View>
+        <View style={styles.iconInputContainer}>
+          <Icon name="envelope" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -50,7 +59,7 @@ const Login = () => {
           />
         </View>
         <View style={styles.iconInputContainer}>
-          <Icon name="lock" size={20} color="#ccc" style={styles.inputIcon} />
+          <Icon name="lock" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -58,13 +67,21 @@ const Login = () => {
             secureTextEntry={true} // for password fields
           />
         </View>
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+        <View style={styles.iconInputContainer}>
+          <Icon name="lock" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            onChangeText={setConfirm}
+            secureTextEntry={true} // for password fields
+          />
+        </View>
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
-        <Text style={styles.orText}>- or -</Text>
         <TouchableOpacity style={styles.loginWithGoogleButton} onPress={handleLoginWithGoogle}>
           <Icon name="google" size={20} color="#552448" style={styles.googleIcon} />
-          <Text style={styles.googleText}>Login with Google</Text>
+          <Text style={styles.googleText}>Sign Up with Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.forgotPasswordLink} onPress={handleForgotPassword}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
@@ -100,19 +117,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#79124A',
     transform: [{ rotate: '-90deg' }],
   },
-  
   image: {
     height: deviceHeight * 0.25,
     width: deviceWidth * 0.5,
-    marginBottom: deviceHeight * 0.025,
-    marginTop: deviceHeight * 0.2,
+    marginBottom: deviceHeight * 0.010,
+    marginTop: deviceHeight * 0.07,
   },
   title: {
     fontSize: deviceHeight / 30,
-    fontFamily: 'manrope',
+    fontFamily: 'Manrope-Bold',
     fontWeight: "bold",
     color: 'white',
-    marginBottom: deviceHeight * 0.025,
+    marginBottom: deviceHeight * 0.04,
   },
   inputContainer: {
     justifyContent: 'center',
@@ -121,7 +137,7 @@ const styles = StyleSheet.create({
   },
   iconInputContainer: {
     position: 'relative',
-    marginBottom: deviceHeight / 30,
+    marginBottom: deviceHeight / 22,
     width: '78%',
     height: deviceHeight * .06,
   },
@@ -129,7 +145,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: '5%',
     zIndex: 1,
-    top: '25%',
+    top: '30%',
   },
   input: {
     width: '100%',
@@ -141,13 +157,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: deviceWidth / 40,
   },
-  loginButton: {
-    
+  signUpButton: {
     backgroundColor: 'white',
     borderRadius: deviceWidth / 10,
-    marginTop: deviceHeight * 0.02,
+    //marginTop: deviceHeight * 0.02,
     paddingVertical: deviceHeight * 0.018,
-    paddingHorizontal: deviceWidth * 0.1,
+    //paddingHorizontal: deviceWidth * 0.1,
     width: '35%',
     height: deviceHeight * .07,
   },
@@ -157,28 +172,26 @@ const styles = StyleSheet.create({
     fontSize: deviceHeight / 43,
     fontWeight: 'bold',
   },
-  orText: {
-    color: 'white',
-    fontSize: deviceHeight / 50,
-    marginTop: deviceHeight * 0.02,
-  },
   googleText: {
-    color: '#552448',
+    color: 'white',
     textAlign: 'center',
     fontSize: deviceHeight / 70,
     marginLeft: deviceWidth * 0.01,
   },
   loginWithGoogleButton: {
-    backgroundColor: 'white',
-    borderRadius: deviceWidth / 45,
-    marginTop: deviceHeight * 0.02,
+   // backgroundColor: 'white',
+    borderColor: 'white',
+    borderWidth: deviceWidth / 300,
+    borderRadius: deviceWidth / 20,
+    marginTop: deviceHeight * 0.035,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: deviceWidth * 0.03,
-    width: '37%',
-    height: deviceHeight * .05,
+    width: '40%',
+    height: deviceHeight * .04,
   },
-  googleIcon: {
+  googleIcon: {   
+    color: 'white',
     marginRight: deviceWidth * 0.02,
   },
   forgotPasswordLink: {

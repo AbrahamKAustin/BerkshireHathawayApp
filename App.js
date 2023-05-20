@@ -1,11 +1,11 @@
 import React from "react";
 import { AppRegistry } from "react-native";
 
-import LoginSignup from "./js/LoginSignup";
+import Login from "./js/Login";
 
 const App = () => {
   return (
-    <LoginSignup />
+    <Login />
   );
 };
 

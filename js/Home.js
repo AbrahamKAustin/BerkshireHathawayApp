@@ -13,16 +13,16 @@ import logo2 from "../assets/logo2.png";
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
-const LoginSignup = ({ navigation }) => {
+const Home = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    navigation.navigate('Login');
+    // TODO: Login the user
   };
 
   const handleSignup = () => {
-    navigation.navigate('Signup');
+    // TODO: Sign up the user
   };
 
   return (
@@ -87,4 +87,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginSignup;
+export default Home;

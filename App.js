@@ -1,14 +1,25 @@
-import React from "react";
-import { AppRegistry } from "react-native";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import LoginSignup from "./js/LoginSignup";
+import Home from './js/Home';
+import Login from './js/Login';
+import Signup from './js/Signup';
+import LoginSignup from './js/LoginSignup';
+
+const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <LoginSignup />
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="LoginSignup" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="LoginSignup" component={LoginSignup} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Signup" component={Signup} />
+        <Stack.Screen name="Home" component={Home} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
-
-AppRegistry.registerComponent("BerkshireHathaway", () => App);
 
 export default App;

@@ -15,12 +15,12 @@ const TriangleShape = ({ color }) => {
 };
 
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // TODO: Login the user
+    navigation.navigate('Home');
   };
 
   const handleSignup = () => {
@@ -37,12 +37,15 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-left" size={deviceHeight / 38} color="#fff" />
+      </TouchableOpacity>
       <TriangleShape color="#79124A" />
       <Image style={styles.image} source={logo1} />
       <Text style={styles.title}>Login</Text>
       <View style={styles.inputContainer}>
         <View style={styles.iconInputContainer}>
-          <Icon name="envelope" size={20} color="#ccc" style={styles.inputIcon} />
+          <Icon name="envelope" size={deviceHeight / 38} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -50,7 +53,7 @@ const Login = () => {
           />
         </View>
         <View style={styles.iconInputContainer}>
-          <Icon name="lock" size={20} color="#ccc" style={styles.inputIcon} />
+          <Icon name="lock" size={deviceHeight / 38} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -63,7 +66,7 @@ const Login = () => {
         </TouchableOpacity>
         <Text style={styles.orText}>- or -</Text>
         <TouchableOpacity style={styles.loginWithGoogleButton} onPress={handleLoginWithGoogle}>
-          <Icon name="google" size={20} color="#552448" style={styles.googleIcon} />
+          <Icon name="google" size={deviceHeight / 48} color="#552448" style={styles.googleIcon} />
           <Text style={styles.googleText}>Login with Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.forgotPasswordLink} onPress={handleForgotPassword}>
@@ -79,6 +82,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#670038',
+  },
+  backButton: {
+    position: 'absolute',
+    color: 'white',
+    top: '6%',
+    left: '4%',
   },
   triangle: {
     position: 'absolute',

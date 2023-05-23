@@ -3,14 +3,11 @@ import {
   StyleSheet,
   View,
   Text,
-  TextInput,
-  Button,
   Dimensions,
   Image,
   TouchableOpacity
 } from "react-native";
-
-
+import Icon from 'react-native-vector-icons/Ionicons';
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
@@ -27,8 +24,13 @@ const Home = ({ navigation }) => {
     startDate: '05/23'
   });
 
+  const handleContinue = () => {
+    alert("Continue was pressed!");
+  };
+
   return (
     <View style={styles.container}>
+
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Home</Text>
         <View style={styles.pointContainer}>
@@ -36,7 +38,13 @@ const Home = ({ navigation }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.groupContainer}>
+      <TouchableOpacity style={styles.groupContainer} onPress={handleContinue}>
+        <View style={styles.smallerCirclesContainer}>
+          <View style={styles.smallerCircle} />
+        </View>
+        <View style={styles.biggerCirclesContainer}>
+          <View style={styles.biggerCircle} />
+        </View>
         <View style={styles.topGroupContainer}>
           <Image
             style={styles.avatar}
@@ -63,6 +71,14 @@ const Home = ({ navigation }) => {
           source={post.postImage}
         />
       </TouchableOpacity>
+
+      <View style={styles.smallRectangle}>
+          <Text style={styles.rectangleText}>{post.groupName}</Text>
+          <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+            <Text style={styles.continueText}>Continue</Text>
+            <Icon name="arrow-forward" size={deviceHeight/40} color="white" />
+          </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -72,8 +88,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f4f4f4',
     alignItems: "center",
-    //justifyContent: "center",
   },
+
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -90,7 +106,7 @@ const styles = StyleSheet.create({
   },
   pointContainer: {
     backgroundColor: '#670038',
-    borderRadius: 50,  // Gives the oval shape
+    borderRadius: 50,
     width: '45%',
     height: deviceHeight/22,
     alignItems: 'center',
@@ -103,33 +119,58 @@ const styles = StyleSheet.create({
   },
   groupContainer: {
     flexDirection: 'column',
-    //justifyContent: 'center',
-    //alignItems: 'center',
     padding: deviceWidth * 0.05,
     backgroundColor: 'white',
     borderRadius: 15,
     marginTop: deviceHeight * 0.05,
     width: '87%',
-   // flexWrap: 'wrap',
-    height: '40%',
+    height: '36%',
+    overflow: 'hidden',
   },
-  topGroupContainer:{
-    //backgroundColor: '#eee',
-    //borderRadius: 50,  // Gives the oval shape
-    //width: '45%',
+  smallerCirclesContainer: {
+    position: "absolute",
+    top: "-45%",
+    right: "-35%",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+  smallerCircle: {
+    position: "absolute",
+    width: deviceWidth * 0.22,
+    height: deviceWidth * 0.22,
+    borderRadius: deviceWidth * 1.2,
+    backgroundColor: "#791248",
+  },
+  biggerCirclesContainer: {
+    position: "absolute",
+    bottom: "-22%",
+    left: "-28%",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+  biggerCircle: {
+    position: "absolute",
+    width: deviceWidth * 0.41,
+    height: deviceWidth * 0.41,
+    borderRadius: deviceWidth * 1.2,
+    backgroundColor: "#791248",
+  },
+  topGroupContainer: {
     flexDirection: 'row',
     height: deviceHeight/18,
     alignItems: 'center',
     marginBottom: '5%',
-    //padding: deviceWidth/1,
-    //justifyContent: 'center',
   },
   avatar: {
     width: deviceWidth * 0.1,
     height: deviceWidth * 0.1,
     borderRadius: (deviceWidth * 0.1) / 2,
   },
-  name:{
+  name: {
     marginLeft: deviceWidth/30,
     marginTop: deviceHeight/80,
     fontSize: deviceHeight / 53,
@@ -143,10 +184,7 @@ const styles = StyleSheet.create({
     fontFamily: 'manrope',
     color: 'grey',
   },
-  midGroupContainer:{
-    //backgroundColor: '#eee',
-    //borderRadius: 50,  // Gives the oval shape
-    //width: '45%',
+  midGroupContainer: {
     flexDirection: 'row',
     height: deviceHeight/13,
     alignItems: 'center',
@@ -154,8 +192,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   textContainer: {
-    width: '60%', // Or any value that suits your design
-    // Add other styles as needed
+    width: '60%',
   },  
   groupName: {
     fontSize: deviceHeight / 30,
@@ -165,7 +202,7 @@ const styles = StyleSheet.create({
   postImage: {
     width: '100%',
     borderRadius: deviceHeight/ 50,
-    height: deviceHeight * 0.15,
+    height: deviceHeight * 0.13,
     marginTop: deviceHeight * 0.02,
   },
   startDate: {
@@ -174,6 +211,43 @@ const styles = StyleSheet.create({
     color: 'grey',
     marginTop: deviceHeight * 0.02,
   },
+  smallRectangle: {
+    //flexDirection: 'row',
+    //justifyContent: '',
+    //alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: deviceWidth * 0.05,
+    borderRadius: 15,
+    marginTop: deviceHeight * 0.05,
+    marginBottom: deviceHeight * 0.02,
+    width: '87%',
+    height: '14%',
+  },
+  rectangleText:{
+    fontSize: deviceHeight / 40,
+    fontFamily: 'manrope',
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  continueButton: {
+    flexDirection: 'row',  // added this to layout text and icon horizontally
+    justifyContent: 'space-between', // added this to give space between text and icon
+    backgroundColor: '#670038',
+    borderRadius: 8,  
+    padding: deviceWidth * 0.02,
+    paddingHorizontal: deviceWidth * 0.04,
+    marginTop: '5%',
+    width: '47%',
+    height: '45%',
+    alignItems: 'center',  // added this to align text and icon vertically
+  },
+
+  continueText: {
+    fontSize: deviceHeight / 60,
+    fontFamily: 'manrope',
+    color: 'white',
+  },
+
   
 });
 

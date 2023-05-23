@@ -17,11 +17,11 @@ const LoginSignup = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // TODO: Login the user
+    navigation.navigate('Login');
   };
 
   const handleSignup = () => {
-    // TODO: Sign up the user
+    navigation.navigate('Signup');
   };
 
   return (

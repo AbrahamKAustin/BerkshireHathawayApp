@@ -30,7 +30,12 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-
+        <View style={styles.half1CircleContainer}>
+          <View style={styles.halfCircle} />
+        </View>
+        <View style={styles.half2CircleContainer}>
+          <View style={styles.halfCircle} />
+        </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Home</Text>
         <View style={styles.pointContainer}>
@@ -88,8 +93,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f4f4f4',
     alignItems: "center",
+    overflow: 'hidden',
   },
-
+  half1CircleContainer: {
+    position: "absolute",
+    bottom: "-55%",
+    right: "-50%",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+  half2CircleContainer: {
+    position: "absolute",
+    bottom: "-60%",
+    left: "-40%",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+  halfCircle: {
+    width: deviceWidth*1.4,
+    height: deviceWidth*1.4,
+    borderRadius: deviceWidth * 1.2,
+    backgroundColor: "#791248",
+    opacity: .16,
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',

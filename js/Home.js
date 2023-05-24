@@ -5,23 +5,23 @@ import {
   Text,
   Dimensions,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from "react-native-vector-icons/Ionicons";
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const Home = ({ navigation }) => {
   const [points, setPoints] = useState(0);
-  const [rank, setRank] = useState('Beginner');
+  const [rank, setRank] = useState("Beginner");
 
   const [post, setPost] = useState({
-    name: 'Liz Goodchild',
-    groupName: 'Battle of the Generations',
-    posterName: 'Poster Name',
-    posterAvatar: require('../assets/lgoodchild.png'),
-    postImage: require('../assets/books.png'),
-    startDate: '05/23'
+    name: "Liz Goodchild",
+    groupName: "Battle of the Generations",
+    posterName: "Poster Name",
+    posterAvatar: require("../assets/lgoodchild.png"),
+    postImage: require("../assets/books.png"),
+    startDate: "05/23",
   });
 
   const handleContinue = () => {
@@ -30,16 +30,19 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-        <View style={styles.half1CircleContainer}>
-          <View style={styles.halfCircle} />
-        </View>
-        <View style={styles.half2CircleContainer}>
-          <View style={styles.halfCircle} />
-        </View>
+      <View style={styles.half1CircleContainer}>
+        <View style={styles.halfCircle} />
+      </View>
+      <View style={styles.half2CircleContainer}>
+        <View style={styles.halfCircle} />
+      </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Home</Text>
         <View style={styles.pointContainer}>
-          <Text style={styles.pointText}>{'Points:\t'} {points}{'\t|\tRank:\t'} {rank}</Text>
+          <Text style={styles.pointText}>
+            {"Points:"} {points}
+            {" | Rank:"} {rank}
+          </Text>
         </View>
       </View>
 
@@ -51,38 +54,39 @@ const Home = ({ navigation }) => {
           <View style={styles.biggerCircle} />
         </View>
         <View style={styles.topGroupContainer}>
-          <Image
-            style={styles.avatar}
-            source={post.posterAvatar}
-          />
-          <View justifyContent ={'center'} padding = '2%'>
+          <Image style={styles.avatar} source={post.posterAvatar} />
+          <View justifyContent={"center"} padding="2%">
             <Text style={styles.name}>{post.name}</Text>
-            <Text style={styles.greyName}>{'Posted by'}</Text>
+            <Text style={styles.greyName}>{"Posted by"}</Text>
           </View>
         </View>
-        <View style = {styles.midGroupContainer}>
-          <View style = {styles.textContainer}>
-            <Text style={styles.groupName} numberOfLines={2} ellipsizeMode="tail">
+        <View style={styles.midGroupContainer}>
+          <View style={styles.textContainer}>
+            <Text
+              style={styles.groupName}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
               {post.groupName}
             </Text>
           </View>
-          <View justifyContent ={'center'} >
+          <View justifyContent={"center"}>
             <Text style={styles.name}>{post.startDate}</Text>
-            <Text style={styles.greyName}>{'Start Date'}</Text>
+            <Text style={styles.greyName}>{"Start Date"}</Text>
           </View>
         </View>
-        <Image
-          style={styles.postImage}
-          source={post.postImage}
-        />
+        <Image style={styles.postImage} source={post.postImage} />
       </TouchableOpacity>
 
       <View style={styles.smallRectangle}>
-          <Text style={styles.rectangleText}>{post.groupName}</Text>
-          <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-            <Text style={styles.continueText}>Continue</Text>
-            <Icon name="arrow-forward" size={deviceHeight/40} color="white" />
-          </TouchableOpacity>
+        <Text style={styles.rectangleText}>{post.groupName}</Text>
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={handleContinue}
+        >
+          <Text style={styles.continueText}>Continue</Text>
+          <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -91,9 +95,9 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: "#f4f4f4",
     alignItems: "center",
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   half1CircleContainer: {
     position: "absolute",
@@ -114,48 +118,48 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   halfCircle: {
-    width: deviceWidth*1.4,
-    height: deviceWidth*1.4,
+    width: deviceWidth * 1.4,
+    height: deviceWidth * 1.4,
     borderRadius: deviceWidth * 1.2,
     backgroundColor: "#791248",
-    opacity: .16,
+    opacity: 0.16,
   },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     width: deviceWidth,
     height: deviceHeight * 0.17,
     padding: deviceWidth * 0.05,
   },
   titleText: {
     fontSize: deviceHeight / 30,
-    fontFamily: 'manrope',
+    fontFamily: "manrope",
     fontWeight: "bold",
-    color: 'black',
+    color: "black",
   },
   pointContainer: {
-    backgroundColor: '#670038',
+    backgroundColor: "#670038",
     borderRadius: 50,
-    width: '45%',
-    height: deviceHeight/22,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "45%",
+    height: deviceHeight / 22,
+    alignItems: "center",
+    justifyContent: "center",
   },
   pointText: {
     fontSize: deviceHeight / 80,
-    fontFamily: 'manrope',
-    color: 'white',
+    fontFamily: "manrope",
+    color: "white",
   },
   groupContainer: {
-    flexDirection: 'column',
+    flexDirection: "column",
     padding: deviceWidth * 0.05,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 15,
     marginTop: deviceHeight * 0.05,
-    width: '87%',
-    height: '36%',
-    overflow: 'hidden',
+    width: "87%",
+    height: "36%",
+    overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -198,10 +202,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#791248",
   },
   topGroupContainer: {
-    flexDirection: 'row',
-    height: deviceHeight/18,
-    alignItems: 'center',
-    marginBottom: '5%',
+    flexDirection: "row",
+    height: deviceHeight / 18,
+    alignItems: "center",
+    marginBottom: "5%",
   },
   avatar: {
     width: deviceWidth * 0.1,
@@ -209,54 +213,54 @@ const styles = StyleSheet.create({
     borderRadius: (deviceWidth * 0.1) / 2,
   },
   name: {
-    marginLeft: deviceWidth/30,
-    marginTop: deviceHeight/80,
+    marginLeft: deviceWidth / 30,
+    marginTop: deviceHeight / 80,
     fontSize: deviceHeight / 53,
-    fontFamily: 'manrope',
-    fontWeight: 'bold',
-    color: 'black',
-  },  
+    fontFamily: "manrope",
+    fontWeight: "bold",
+    color: "black",
+  },
   greyName: {
-    marginLeft: deviceWidth/30,
+    marginLeft: deviceWidth / 30,
     fontSize: deviceHeight / 80,
-    fontFamily: 'manrope',
-    color: 'grey',
+    fontFamily: "manrope",
+    color: "grey",
   },
   midGroupContainer: {
-    flexDirection: 'row',
-    height: deviceHeight/13,
-    alignItems: 'center',
-    marginBottom: '5%',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    height: deviceHeight / 13,
+    alignItems: "center",
+    marginBottom: "5%",
+    justifyContent: "space-around",
   },
   textContainer: {
-    width: '60%',
-  },  
+    width: "60%",
+  },
   groupName: {
     fontSize: deviceHeight / 30,
-    fontFamily: 'manrope',
-    color: 'black',
+    fontFamily: "manrope",
+    color: "black",
   },
   postImage: {
-    width: '100%',
-    borderRadius: deviceHeight/ 50,
+    width: "100%",
+    borderRadius: deviceHeight / 50,
     height: deviceHeight * 0.13,
     marginTop: deviceHeight * 0.02,
   },
   startDate: {
     fontSize: deviceHeight / 50,
-    fontFamily: 'manrope',
-    color: 'grey',
+    fontFamily: "manrope",
+    color: "grey",
     marginTop: deviceHeight * 0.02,
   },
   smallRectangle: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: deviceWidth * 0.05,
     borderRadius: 15,
     marginTop: deviceHeight * 0.05,
     marginBottom: deviceHeight * 0.02,
-    width: '87%',
-    height: '14%',
+    width: "87%",
+    height: "14%",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -266,32 +270,30 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  rectangleText:{
+  rectangleText: {
     fontSize: deviceHeight / 40,
-    fontFamily: 'manrope',
-    color: 'black',
-    fontWeight: 'bold',
+    fontFamily: "manrope",
+    color: "black",
+    fontWeight: "bold",
   },
   continueButton: {
-    flexDirection: 'row',  // added this to layout text and icon horizontally
-    justifyContent: 'space-between', // added this to give space between text and icon
-    backgroundColor: '#670038',
-    borderRadius: 8,  
+    flexDirection: "row", // added this to layout text and icon horizontally
+    justifyContent: "space-between", // added this to give space between text and icon
+    backgroundColor: "#670038",
+    borderRadius: 8,
     padding: deviceWidth * 0.02,
     paddingHorizontal: deviceWidth * 0.04,
-    marginTop: '5%',
-    width: '47%',
-    height: '45%',
-    alignItems: 'center',  // added this to align text and icon vertically
+    marginTop: "5%",
+    width: "47%",
+    height: "45%",
+    alignItems: "center", // added this to align text and icon vertically
   },
 
   continueText: {
     fontSize: deviceHeight / 60,
-    fontFamily: 'manrope',
-    color: 'white',
+    fontFamily: "manrope",
+    color: "white",
   },
-
-  
 });
 
 export default Home;

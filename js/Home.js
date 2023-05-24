@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   half1CircleContainer: {
     position: "absolute",
-    bottom: "-55%",
+    bottom: "-54%",
     right: "-50%",
     justifyContent: "center",
     alignItems: "center",
@@ -156,6 +156,14 @@ const styles = StyleSheet.create({
     width: '87%',
     height: '36%',
     overflow: 'hidden',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   smallerCirclesContainer: {
     position: "absolute",
@@ -242,9 +250,6 @@ const styles = StyleSheet.create({
     marginTop: deviceHeight * 0.02,
   },
   smallRectangle: {
-    //flexDirection: 'row',
-    //justifyContent: '',
-    //alignItems: 'center',
     backgroundColor: '#fff',
     padding: deviceWidth * 0.05,
     borderRadius: 15,
@@ -252,6 +257,14 @@ const styles = StyleSheet.create({
     marginBottom: deviceHeight * 0.02,
     width: '87%',
     height: '14%',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   rectangleText:{
     fontSize: deviceHeight / 40,

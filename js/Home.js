@@ -6,6 +6,7 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
+  SafeAreaView
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 let deviceHeight = Dimensions.get("window").height;
@@ -23,6 +24,24 @@ const Home = ({ navigation }) => {
     postImage: require("../assets/books.png"),
     startDate: "05/23",
   });
+
+  const FloatingNavBar = ({ navigation }) => {
+    return (
+      <SafeAreaView style={styles.navBarContainer}>
+        <TouchableOpacity
+          style={styles.selectedNavBarButton}
+          onPress={() => navigation.navigate("Home")}>
+          <Icon name="home" size={deviceHeight / 38} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navBarButton}
+          onPress={() => navigation.navigate("Signup")}>
+          <Icon name="person" size={deviceHeight / 38} color="#670038" />
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  };
 
   const handleContinue = () => {
     navigation.navigate('TasksPage');
@@ -62,11 +81,7 @@ const Home = ({ navigation }) => {
         </View>
         <View style={styles.midGroupContainer}>
           <View style={styles.textContainer}>
-            <Text
-              style={styles.groupName}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
+            <Text style={styles.groupName} >
               {post.groupName}
             </Text>
           </View>
@@ -88,6 +103,7 @@ const Home = ({ navigation }) => {
           <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />
         </TouchableOpacity>
       </View>
+      <FloatingNavBar navigation={navigation} />
     </View>
   );
 };
@@ -235,6 +251,8 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     width: "60%",
+    numberOfLines: 2,
+    ellipsizeMode: "tail"
   },
   groupName: {
     fontSize: deviceHeight / 30,
@@ -293,6 +311,45 @@ const styles = StyleSheet.create({
     fontSize: deviceHeight / 60,
     fontFamily: "manrope",
     color: "white",
+  },
+  navBarContainer: {
+    flexDirection: "row",
+    borderRadius: deviceHeight/40,
+    justifyContent: "space-around",
+    alignItems: "center",
+    position: "absolute",
+    bottom: '5%',
+    left: '7%',
+    right: '7%',
+    height: deviceHeight/10,
+    backgroundColor: "white",
+    borderTopWidth: 1,
+    borderTopColor: "#e8e8e8",
+    paddingHorizontal: 15,
+    //zIndex: 100,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 3.62,
+    elevation: 4,
+  },
+  navBarButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    borderRadius: deviceHeight/54,
+    width: deviceWidth/3.5,
+  },
+  selectedNavBarButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    backgroundColor:'#670038',
+    borderRadius: deviceHeight/54,
+    width: deviceWidth/3.5,
   },
 });
 

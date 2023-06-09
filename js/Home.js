@@ -36,7 +36,7 @@ const Home = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.navBarButton}
-          onPress={() => navigation.navigate("Signup")}>
+          onPress={() => navigation.navigate("ProfilePage")}>
           <Icon name="person" size={deviceHeight / 38} color="#670038" />
         </TouchableOpacity>
       </SafeAreaView>

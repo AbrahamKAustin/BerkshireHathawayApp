@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -15,18 +15,14 @@ let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const ProfilePage = ({ navigation }) => {
-  const [points, setPoints] = useState(0);
-  const [rank, setRank] = useState("Beginner");
-
-  const [post, setPost] = useState({
-    name: "Liz Goodchild",
-    groupName: "Battle of the Generations",
-    posterName: "Poster Name",
-    posterAvatar: require("../assets/lgoodchild.png"),
-    postImage: require("../assets/books.png"),
-    startDate: "05/23",
+  const [userData, setUserData] = useState({
+    profileName: "",
+    email: "",
+    totalPoints: "",
+    rank: "",
+    groups: [],
+    posterAvatar: "", // Assuming you want to add a posterAvatar property
   });
-
   const FloatingNavBar = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.navBarContainer}>
@@ -38,11 +34,34 @@ const ProfilePage = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.selectedNavBarButton}
-          onPress={() => navigation.navigate("Signup")}>
+          onPress={() => navigation.navigate("ProfilePage")}>
           <Icon name="person" size={deviceHeight / 38} color="white" />
         </TouchableOpacity>
       </SafeAreaView>
     );
+  };
+  useEffect(() => {
+    fetchUserDataFromDatabase();
+  }, []);
+
+  const fetchUserDataFromDatabase = () => {
+    const dataFromDatabase = {
+      profileName: "Elizabeth Goodchild",
+      email: "lgoodchild@starckre.com",
+      totalPoints: "432",
+      rank: "Diamond",
+      groups: [
+        {
+          groupName: "Battle of the Generations",
+          points: "328",
+          position: "3",
+          change: "+6",
+        },
+      ],
+      posterAvatar: require('../assets/lgoodchild.png'),
+    };
+
+    setUserData(dataFromDatabase);
   };
 
   const handleContinue = () => {
@@ -51,14 +70,13 @@ const ProfilePage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Profile</Text>
         <View alignItems={"flex-end"} marginLeft={deviceWidth/4} padding="2%">
-          <Text style={styles.name}>{post.name}</Text>
+          <Text style={styles.name}>{userData.profileName}</Text>
           <Text style={styles.roleText}>{"Admin"}</Text>
         </View>
-        <Image style={styles.avatar} source={post.posterAvatar} />
+        <Image style={styles.avatar} source={userData.posterAvatar } />
       </View>
 
       <View style={styles.profileContainer}>
@@ -70,34 +88,48 @@ const ProfilePage = ({ navigation }) => {
           </View>
           <View style={styles.midProfileContainer}>
             <View style={styles.textContainer}>
-              <Text style={styles.profileName} > Elizabeth Goodchild </Text>
-              <Text style={styles.emailText} > lgoodchild@starckre.com </Text>
+              <Text style={styles.profileName}>{userData.profileName}</Text>
+              <Text style={styles.emailText}>{userData.email}</Text>
             </View>
           </View>
           <View style={styles.profileStats}>
-            <View style ={styles.statsColumns}>
-              <Text style={styles.profileStatsTitle} > Total Points </Text>
-              <Text style={styles.profileStatsText} > 432 </Text>
+            <View style={styles.statsColumns}>
+              <Text style={styles.profileStatsTitle}>Total Points</Text>
+              <Text style={styles.profileStatsText}>{userData.totalPoints}</Text>
             </View>
-            <View style ={styles.statsColumns}>
-              <Text style={styles.profileStatsTitle} > Rank: </Text>
-              <Text style={styles.profileStatsText} > Diamond </Text>
+            <View style={styles.statsColumns}>
+              <Text style={styles.profileStatsTitle}>Rank</Text>
+              <Text style={styles.profileStatsText}>{userData.rank}</Text>
             </View>
           </View>
         </ImageBackground>
       </View>
-      <Text style = {styles.groupsText}>
-        Groups
-      </Text>
 
-      <View style={styles.group1}>
-        <Text style={styles.group1Text}>{post.groupName}</Text>
-        <View style={styles.group1StatsContainer}>
-          <Text style={styles.group1StatsTitle}>Continue</Text>
-          <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />
-        </View>
+      <View style={styles.groupsTextContainer}>
+        <Text style={styles.groupsText}>Groups</Text>
       </View>
-      <FloatingNavBar navigation={navigation} />
+
+      {userData.groups.map((group, index) => (
+        <View key={index} style={styles.group1}>
+          <Text style={styles.group1Text}>{group.groupName}</Text>
+          <View style={styles.group1StatsContainer}>
+            <View style={styles.group1StatsColumns}>
+              <Text style={styles.group1StatsTitle}>PTS</Text>
+              <Text style={styles.group1StatsText}>{group.points}</Text>
+            </View>
+            <View style={styles.group1StatsColumns}>
+              <Text style={styles.group1StatsTitle}>POS</Text>
+              <Text style={styles.group1StatsText}>{group.position}</Text>
+            </View>
+            <View style={styles.group1StatsColumns}>
+              <Text style={styles.group1StatsTitle}>CHG</Text>
+              <Text style={styles.group1StatsText}>{group.change}</Text>
+            </View>
+          </View>
+        </View>
+      ))}
+    <FloatingNavBar navigation={navigation} />
+
     </View>
   );
 };
@@ -124,10 +156,12 @@ const styles = StyleSheet.create({
     color: "black",
   },
   avatar: {
-    width: deviceWidth * 0.1,
-    height: deviceWidth * 0.1,
+    width: deviceWidth * 0.085,
+    height: deviceWidth * 0.085,
     borderRadius: (deviceWidth * 0.1) / 2,
+    marginRight: deviceWidth * 0.05, // Adjust this value according to your needs
   },
+  
   name: {
     marginLeft: deviceWidth / 30,
     marginTop: deviceHeight / 80,
@@ -156,7 +190,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     marginBottom: deviceHeight * 0.03,
-
   },
   imageBackground: {
     flex: 1,
@@ -217,8 +250,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%',
-    width: '50%',
+    flex: 2,
   },
   profileStatsTitle: {
     fontSize: deviceHeight / 47,
@@ -232,12 +264,16 @@ const styles = StyleSheet.create({
     color: "#A59E8F",
     marginTop: '1.5%'
   },
+  groupsTextContainer:{
+    width: '100%',
+    marginLeft: '18%',
+
+  },
   groupsText: {
-    fontSize: deviceHeight / 48,
+    fontSize: deviceHeight / 38,
     fontFamily: "manrope",
     fontWeight: "light",
     color: "black",
-    marginLeft: '6%',
   },
   group1: {
     backgroundColor: "#fff",
@@ -279,9 +315,15 @@ const styles = StyleSheet.create({
   },
 
   group1StatsTitle: {
-    fontSize: deviceHeight / 60,
+    fontSize: deviceHeight / 52,
     fontFamily: "manrope",
     color: "white",
+  },
+  group1StatsText: {
+    fontSize: deviceHeight / 52,
+    fontFamily: "manrope",
+    color: "#f1f1f1",
+    marginTop: '1.5%'
   },
   group1StatsColumns: {
     flexDirection: 'column',

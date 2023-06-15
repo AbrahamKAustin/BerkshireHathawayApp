@@ -14,43 +14,33 @@ const TriangleShape = ({ color }) => {
   );
 };
 
-const Signup = ({navigation}) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+const EditPage = ({navigation}) => {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [currentEmail, setEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleLogin = () => {
-    // TODO: Login the user
-  };
-
-  const handleSignUp = () => {
-    navigation.navigate('Home');
-  };
-
-  const handleForgotPassword = () => {
-    // TODO: Handle forgot password functionality
-  };
-
-  const handleLoginWithGoogle = () => {
-    // TODO: Handle login with Google functionality
+  const handleChangePassword = () => {
+    // handle the password change logic here
+    // for now, let's just log the new password
+    console.log(newPassword);
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('ProfilePage')}>
         <Icon name="arrow-left" size={deviceHeight / 38} color="#fff" />
       </TouchableOpacity>
       <TriangleShape color="#79124A" />
       <Image style={styles.image} source={logo1} />
-      <Text style={styles.title}>Create an account</Text>
+      <Text style={styles.title}>Change Password</Text>
       <View style={styles.inputContainer}>
         <View style={styles.iconInputContainer}>
           <Icon name="user" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
-            placeholder="Name"
-            onChangeText={setName}
+            placeholder="Current Password"
+            onChangeText={setCurrentPassword}
           />
         </View>
         <View style={styles.iconInputContainer}>
@@ -65,8 +55,8 @@ const Signup = ({navigation}) => {
           <Icon name="lock" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
-            placeholder="Password"
-            onChangeText={setPassword}
+            placeholder="New Password"
+            onChangeText={setNewPassword}
             secureTextEntry={true} // for password fields
           />
         </View>
@@ -75,19 +65,12 @@ const Signup = ({navigation}) => {
           <TextInput
             style={styles.input}
             placeholder="Confirm Password"
-            onChangeText={setConfirm}
+            onChangeText={setConfirmPassword}
             secureTextEntry={true} // for password fields
           />
         </View>
-        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.loginWithGoogleButton} onPress={handleLoginWithGoogle}>
-          <Icon name="google" size={deviceHeight / 48} color="#552448" style={styles.googleIcon} />
-          <Text style={styles.googleText}>Sign Up with Google</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.forgotPasswordLink} onPress={handleForgotPassword}>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        <TouchableOpacity style={styles.signUpButton} onPress={handleChangePassword}>
+          <Text style={styles.buttonText}>Done</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -213,4 +196,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Signup;
+export default EditPage;

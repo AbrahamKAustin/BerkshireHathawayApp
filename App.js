@@ -8,6 +8,8 @@ import Signup from './js/Signup';
 import LoginSignup from './js/LoginSignup';
 import TasksPage from './js/TasksPage';
 import ProfilePage from './js/ProfilePage';
+import AnalyticsPage from './js/AnalyticsPage';
+import EditPage from './js/EditPage';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +23,8 @@ const App = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="TasksPage" component={TasksPage} />
         <Stack.Screen name="ProfilePage" component={ProfilePage} />
+        <Stack.Screen name="AnalyticsPage" component={AnalyticsPage} />
+        <Stack.Screen name="EditPage" component={EditPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

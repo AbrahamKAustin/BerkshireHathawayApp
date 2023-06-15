@@ -7,7 +7,8 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
-  ImageBackground
+  ImageBackground,
+  ScrollView
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -57,6 +58,12 @@ const ProfilePage = ({ navigation }) => {
           position: "3",
           change: "+6",
         },
+        {
+          groupName: "Battle of the Generations",
+          points: "328",
+          position: "3",
+          change: "+6",
+        },
       ],
       posterAvatar: require('../assets/lgoodchild.png'),
     };
@@ -64,71 +71,86 @@ const ProfilePage = ({ navigation }) => {
     setUserData(dataFromDatabase);
   };
 
-  const handleContinue = () => {
-    navigation.navigate('TasksPage');
+  const handleLogout = () => {
+    navigation.navigate('LoginSignup');
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Profile</Text>
-        <View alignItems={"flex-end"} marginLeft={deviceWidth/4} padding="2%">
-          <Text style={styles.name}>{userData.profileName}</Text>
-          <Text style={styles.roleText}>{"Admin"}</Text>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', }}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>Profile</Text>
+          <View alignItems={"flex-end"} marginLeft={deviceWidth/4} padding="2%">
+            <Text style={styles.name}>{userData.profileName}</Text>
+            <Text style={styles.roleText}>{"Admin"}</Text>
+          </View>
+          <Image style={styles.avatar} source={userData.posterAvatar } />
         </View>
-        <Image style={styles.avatar} source={userData.posterAvatar } />
-      </View>
 
-      <View style={styles.profileContainer}>
-        <ImageBackground style={styles.imageBackground} source={require("../assets/suburbanhome.png")}>
-          <View style={styles.topProfileContainer}>
-            <TouchableOpacity style={styles.editButton} onPress={handleContinue}>
-              <Text style={styles.editText}>Edit</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.midProfileContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.profileName}>{userData.profileName}</Text>
-              <Text style={styles.emailText}>{userData.email}</Text>
-            </View>
-          </View>
-          <View style={styles.profileStats}>
-            <View style={styles.statsColumns}>
-              <Text style={styles.profileStatsTitle}>Total Points</Text>
-              <Text style={styles.profileStatsText}>{userData.totalPoints}</Text>
-            </View>
-            <View style={styles.statsColumns}>
-              <Text style={styles.profileStatsTitle}>Rank</Text>
-              <Text style={styles.profileStatsText}>{userData.rank}</Text>
-            </View>
-          </View>
-        </ImageBackground>
-      </View>
+        <View style={styles.profileContainer}>
+          <ImageBackground style={styles.imageBackground} source={require("../assets/suburbanhome.png")}>
+      
+            <View style = {styles.profileBorderCircle1}/> 
+            <View style = {styles.profileBorderCircle2}/>
+            <View style = {styles.profileBorderCircle3}/>
 
-      <View style={styles.groupsTextContainer}>
-        <Text style={styles.groupsText}>Groups</Text>
-      </View>
-
-      {userData.groups.map((group, index) => (
-        <View key={index} style={styles.group1}>
-          <Text style={styles.group1Text}>{group.groupName}</Text>
-          <View style={styles.group1StatsContainer}>
-            <View style={styles.group1StatsColumns}>
-              <Text style={styles.group1StatsTitle}>PTS</Text>
-              <Text style={styles.group1StatsText}>{group.points}</Text>
+            <View style={styles.topProfileContainer}>
+              <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate("EditPage")}>
+                <Text style={styles.editText}>Edit</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.group1StatsColumns}>
-              <Text style={styles.group1StatsTitle}>POS</Text>
-              <Text style={styles.group1StatsText}>{group.position}</Text>
+            <View style={styles.midProfileContainer}>
+              <View style={styles.textContainer}>
+                <Text style={styles.profileName}>{userData.profileName}</Text>
+                <Text style={styles.emailText}>{userData.email}</Text>
+              </View>
             </View>
-            <View style={styles.group1StatsColumns}>
-              <Text style={styles.group1StatsTitle}>CHG</Text>
-              <Text style={styles.group1StatsText}>{group.change}</Text>
+            <View style={styles.profileStats}>
+              <View style={styles.statsColumns}>
+                <Text style={styles.profileStatsTitle}>Total Points</Text>
+                <Text style={styles.profileStatsText}>{userData.totalPoints}</Text>
+              </View>
+              <View style={styles.statsColumns}>
+                <Text style={styles.profileStatsTitle}>Rank</Text>
+                <Text style={styles.profileStatsText}>{userData.rank}</Text>
+              </View>
             </View>
-          </View>
+          </ImageBackground>
         </View>
-      ))}
-    <FloatingNavBar navigation={navigation} />
+
+        <View style={styles.groupsTextContainer}>
+          <Text style={styles.groupsText}>Groups</Text>
+        </View>
+
+        {userData.groups.map((group, index) => (
+          <View key={index} style={index % 2 === 0 ? styles.group1 : styles.group2}>
+            <View style = {index % 2 === 0 ? styles.group1BorderCircle1 : styles.group2BorderCircle1}/> 
+            <View style = {index % 2 === 0 ? styles.group1BorderCircle2 : styles.group2BorderCircle2}/>
+            <View style = {index % 2 === 0 ? styles.group1BorderCircle3 : styles.group2BorderCircle3}/>
+            <Text style={index % 2 === 0 ? styles.group1Text : styles.group2Text}>{group.groupName}</Text>
+            <View style={index % 2 === 0 ? styles.group1StatsContainer : styles.group2StatsContainer}>
+              <View style={styles.groupStatsColumns}>
+                <Text style={index % 2 === 0 ? styles.group1StatsTitle : styles.group2StatsTitle}>PTS</Text>
+                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{group.points}</Text>
+              </View>
+              <View style={styles.groupStatsColumns}>
+                <Text style={index % 2 === 0 ? styles.group1StatsTitle : styles.group2StatsTitle}>POS</Text>
+                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{group.position}</Text>
+              </View>
+              <View style={styles.groupStatsColumns}>
+                <Text style={index % 2 === 0 ? styles.group1StatsTitle : styles.group2StatsTitle}>CHG</Text>
+                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{group.change}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+        <TouchableOpacity  style = {styles.button} onPress={handleLogout}>
+          <Text style ={styles.buttonText}>Log out</Text>
+          <Icon name="log-out" size={deviceHeight / 40} color='#670038' />
+        </TouchableOpacity>
+        <View height = {deviceHeight/5.5}/>
+      </ScrollView>
+      <FloatingNavBar navigation={navigation} />
 
     </View>
   );
@@ -136,7 +158,7 @@ const ProfilePage = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#f4f4f4",
     alignItems: "center",
     overflow: "hidden",
@@ -144,7 +166,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     width: deviceWidth,
     height: deviceHeight * 0.17,
     padding: deviceWidth * 0.05,
@@ -156,14 +178,12 @@ const styles = StyleSheet.create({
     color: "black",
   },
   avatar: {
-    width: deviceWidth * 0.085,
-    height: deviceWidth * 0.085,
+    width: deviceWidth * 0.095,
+    height: deviceWidth * 0.095,
     borderRadius: (deviceWidth * 0.1) / 2,
-    marginRight: deviceWidth * 0.05, // Adjust this value according to your needs
   },
   
   name: {
-    marginLeft: deviceWidth / 30,
     marginTop: deviceHeight / 80,
     fontSize: deviceHeight / 53,
     fontFamily: "manrope",
@@ -171,15 +191,14 @@ const styles = StyleSheet.create({
     color: "black",
   },
   roleText: {
-    marginLeft: deviceWidth / 30,
     fontSize: deviceHeight / 80,
     fontFamily: "manrope",
     color: "grey",
   },
   profileContainer: {
     borderRadius: 15,
-    width: "87%",
-    height: "36%",
+    width: deviceWidth/1.15,
+    height: deviceHeight/2.78,
     overflow: "hidden",
     shadowColor: "#000", 
     shadowOffset: {
@@ -190,6 +209,40 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     marginBottom: deviceHeight * 0.03,
+  },
+
+  profileBorderCircle1: {
+    position: "absolute",
+    bottom: "4%",
+    left: "10%",
+    width: deviceWidth * 0.4,
+    height: deviceWidth * 0.4,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "white",
+    backgroundColor: "transparent",
+  },
+  profileBorderCircle2: {
+    position: "absolute",
+    bottom: "4%",
+    left: "-15%",
+    width: deviceWidth * 0.4,
+    height: deviceWidth * 0.4,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "white",
+    backgroundColor: "transparent",
+  },
+  profileBorderCircle3: {
+    position: "absolute",
+    bottom: "-15%",
+    left: "-2.5%",
+    width: deviceWidth * 0.4,
+    height: deviceWidth * 0.4,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "white",
+    backgroundColor: "transparent",
   },
   imageBackground: {
     flex: 1,
@@ -281,8 +334,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginTop: deviceHeight * 0.025,
     marginBottom: deviceHeight * 0.02,
-    width: "87%",
-    height: "23%",
+    width: deviceWidth/1.15,
+    height: deviceHeight/4.34,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -293,6 +346,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   group1Text: {
     fontSize: deviceHeight / 40,
@@ -313,7 +367,39 @@ const styles = StyleSheet.create({
     height: "50%",
     alignItems: "center", // added this to align text and icon vertically
   },
-
+  group1BorderCircle1: {
+    position: "absolute",
+    bottom: "4%",
+    right: "7%",
+    width: deviceWidth * 0.25,
+    height: deviceWidth * 0.25,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "#670038",
+    backgroundColor: "transparent",
+  },
+  group1BorderCircle2: {
+    position: "absolute",
+    bottom: "4%",
+    right: "-15%",
+    width: deviceWidth * 0.25,
+    height: deviceWidth * 0.25,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "#670038",
+    backgroundColor: "transparent",
+  },
+  group1BorderCircle3: {
+    position: "absolute",
+    bottom: "-20%",
+    right: "-3.5%",
+    width: deviceWidth * 0.25,
+    height: deviceWidth * 0.25,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "#670038",
+    backgroundColor: "transparent",
+  },
   group1StatsTitle: {
     fontSize: deviceHeight / 52,
     fontFamily: "manrope",
@@ -325,11 +411,119 @@ const styles = StyleSheet.create({
     color: "#f1f1f1",
     marginTop: '1.5%'
   },
-  group1StatsColumns: {
+  groupStatsColumns: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     flex: 3
+  },
+  group2: {
+    backgroundColor: "#670038",
+    padding: deviceWidth * 0.05,
+    borderRadius: 15,
+    marginTop: deviceHeight * 0.025,
+    marginBottom: deviceHeight * 0.02,
+    width: deviceWidth/1.15,
+    height: deviceHeight/4.34,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  group2BorderCircle1: {
+    position: "absolute",
+    bottom: "4%",
+    right: "7%",
+    width: deviceWidth * 0.25,
+    height: deviceWidth * 0.25,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "white",
+    backgroundColor: "transparent",
+  },
+  group2BorderCircle2: {
+    position: "absolute",
+    bottom: "4%",
+    right: "-15%",
+    width: deviceWidth * 0.25,
+    height: deviceWidth * 0.25,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "white",
+    backgroundColor: "transparent",
+  },
+  group2BorderCircle3: {
+    position: "absolute",
+    bottom: "-20%",
+    right: "-3.5%",
+    width: deviceWidth * 0.25,
+    height: deviceWidth * 0.25,
+    borderRadius: deviceWidth * 1.6,
+    borderWidth: 3,
+    borderColor: "white",
+    backgroundColor: "transparent",
+  },
+  group2Text: {
+    fontSize: deviceHeight / 40,
+    fontFamily: "manrope",
+    color: "white",
+    fontWeight: "bold",
+    marginTop: '2%'
+  },
+  group2StatsContainer: {
+    flexDirection: "row", // added this to layout text and icon horizontally
+    justifyContent: "center", // added this to give space between text and icon
+    backgroundColor: "white",
+    borderRadius: 14,
+    padding: deviceWidth * 0.02,
+    paddingHorizontal: deviceWidth * 0.04,
+    marginTop: "9%",
+    width: "87%",
+    height: "50%",
+    alignItems: "center", // added this to align text and icon vertically
+  },
+
+  group2StatsTitle: {
+    fontSize: deviceHeight / 52,
+    fontFamily: "manrope",
+    color: "#670038",
+  },
+  group2StatsText: {
+    fontSize: deviceHeight / 52,
+    fontFamily: "manrope",
+    color: "#7C7C7C",
+    marginTop: '1.5%'
+  },
+  button: {
+    borderRadius: deviceWidth / 35,
+    marginTop: deviceHeight * 0.02,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: deviceWidth * 0.04,
+    width: deviceWidth/1.8,
+    height: deviceHeight * .07,
+    backgroundColor: 'white',
+    shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  buttonText: {
+    fontSize: deviceHeight / 59,
+    fontFamily: "manrope",
+    color: "#670038",
+    fontWeight: 'bold',
   },
   navBarContainer: {
     flexDirection: "row",
@@ -370,6 +564,7 @@ const styles = StyleSheet.create({
     borderRadius: deviceHeight/54,
     width: deviceWidth/3.5,
   },
+
 });
 
 export default ProfilePage;

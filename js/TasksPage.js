@@ -10,26 +10,127 @@ import {
   SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import TaskModal from './TaskModal';
 
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const TasksPage = ({ navigation }) => {
-  const [group, setGroup] = useState("Battle of the Generations");
-  const [tasks, setTasks] = useState([
-    { id: 1, task: 'Meaningful Connections', isCompleted: false},
-    { id: 2, task: 'Buyer Contract', isCompleted: true},
-    { id: 3, task: 'Social Posts', isCompleted: true},
-    { id: 4, task: 'Hours Prospecting', isCompleted: false},
-    { id: 5, task: 'Direct Mail', isCompleted: false},
-    { id: 6, task: 'Buyer Consultations', isCompleted: true},
-    { id: 7, task: 'Prospecting Types', isCompleted: false},
-    { id: 8, task: 'Leads', isCompleted: false},
-    { id: 9, task: "Seller's Appointments", isCompleted: true},
-    { id: 10, task: 'Listing Appointments', isCompleted: false},
-    { id: 11, task: 'Buyer/Tenant Homes', isCompleted: true},
-    { id: 12, task: 'Open House Attendees', isCompleted: false},
-    ]);
+  const [group, setGroup] = useState({
+    name: "Battle of the Generations",
+    tasks: [
+      { 
+        id: 1, 
+        task: 'Meaningful Connections', 
+        isCompleted: false, 
+        questions: [
+          { text: "What made this connection meaningful?", answer: "" },
+          { text: "How can you deepen this connection?", answer: "" },
+        ]
+      },
+      { 
+        id: 2, 
+        task: 'Buyer Contract', 
+        isCompleted: true,
+        questions: [
+          { text: "What is the contract's value?", answer: "" },
+          { text: "What are the key terms?", answer: "" },
+        ]
+      },
+      { 
+        id: 3, 
+        task: 'Social Posts', 
+        isCompleted: true,
+        questions: [
+          { text: "What was the engagement on these posts?", answer: "" },
+          { text: "What can be improved for future posts?", answer: "" },
+        ]
+      },
+      { 
+        id: 4, 
+        task: 'Hours Prospecting', 
+        isCompleted: false,
+        questions: [
+          { text: "How many hours were spent prospecting?", answer: "" },
+          { text: "What was the result?", answer: "" },
+        ]
+      },
+      { 
+        id: 5, 
+        task: 'Direct Mail', 
+        isCompleted: false,
+        questions: [
+          { text: "How many direct mail pieces were sent?", answer: "" },
+          { text: "What was the response rate?", answer: "" },
+        ]
+      },
+      { 
+        id: 6, 
+        task: 'Buyer Consultations', 
+        isCompleted: true,
+        questions: [
+          { text: "How many buyer consultations were held?", answer: "" },
+          { text: "What were the outcomes?", answer: "" },
+        ]
+      },
+      { 
+        id: 7, 
+        task: 'Prospecting Types', 
+        isCompleted: false,
+        questions: [
+          { text: "What types of prospecting were done?", answer: "" },
+          { text: "Which type was most effective?", answer: "" },
+        ]
+      },
+      { 
+        id: 8, 
+        task: 'Leads', 
+        isCompleted: false,
+        questions: [
+          { text: "How many leads were generated?", answer: "" },
+          { text: "What methods were most successful?", answer: "" },
+        ]
+      },
+      { 
+        id: 9, 
+        task: "Seller's Appointments", 
+        isCompleted: true,
+        questions: [
+          { text: "How many seller's appointments were held?", answer: "" },
+          { text: "What were the results of these appointments?", answer: "" },
+        ]
+      },
+      { 
+        id: 10, 
+        task: 'Listing Appointments', 
+        isCompleted: false,
+        questions: [
+          { text: "How many listing appointments were held?", answer: "" },
+          { text: "How many resulted in a listing agreement?", answer: "" },
+        ]
+      },
+      { 
+        id: 11, 
+        task: 'Buyer/Tenant Homes', 
+        isCompleted: true,
+        questions: [
+          { text: "How many homes were found for buyers/tenants?", answer: "" },
+          { text: "What were the key factors in finding these homes?", answer: "" },
+        ]
+      },
+      { 
+        id: 12, 
+        task: 'Open House Attendees', 
+        isCompleted: false,
+        questions: [
+          { text: "How many people attended the open house?", answer: "" },
+          { text: "How can attendance be increased?", answer: "" },
+        ]
+      },
+    ],
+  });
+    const [selectedTask, setSelectedTask] = useState(null);
+
     const [filter, setFilter] = useState('all');
     const [allTasksActive, setAllTasksActive] = useState(true);
     const [incompleteTasksActive, setIncompleteTasksActive] = useState(false);
@@ -65,21 +166,21 @@ const TasksPage = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.navBarButton}
-              onPress={() => navigation.navigate("Signup")}>
+              onPress={() => navigation.navigate("AnalyticsPage")}>
               <Icon name="trending-up" size={deviceHeight / 38} color="#670038" />
             </TouchableOpacity>
           </SafeAreaView>
         );
       };
       
-    let incompleteTasksCount = tasks.filter(task => !task.isCompleted).length;
+    let incompleteTasksCount = group.tasks.filter(task => !task.isCompleted).length;
   
     let filteredTasks = [];
-    for(let i = 0; i < tasks.length; i++) {
+    for(let i = 0; i < group.tasks.length; i++) {
         if(filter === 'all') {
-        filteredTasks.push(tasks[i]);
-        } else if(filter === 'incomplete' && !tasks[i].isCompleted) {
-        filteredTasks.push(tasks[i]);
+        filteredTasks.push(group.tasks[i]);
+        } else if(filter === 'incomplete' && !group.tasks[i].isCompleted) {
+        filteredTasks.push(group.tasks[i]);
         }
     }
 
@@ -87,12 +188,12 @@ const TasksPage = ({ navigation }) => {
     <View style = {styles.container}>
         <ScrollView style={styles.todoContainer}>
             <View style={styles.topContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
                 <Icon name="arrow-back" size={deviceHeight / 38} color="black" />
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
-                <Text style={styles.titleText}>TASKS</Text>
-                <Text style={styles.groupText}>{group}</Text>
+                  <Text style={styles.titleText}>TASKS</Text>
+                  <Text style={styles.groupText}>{group.name}</Text>
                 </View>
             </View>
 
@@ -107,7 +208,7 @@ const TasksPage = ({ navigation }) => {
                 >
                     <Text style={allTasksActive ? styles.filterTextActive : styles.filterText}>ALL</Text>
                     <View style = {allTasksActive ? styles.filterNumberActive : styles.filterNumber} >
-                        <Text style={allTasksActive ? styles.filterNumberTextActive : styles.filterNumberText}>{tasks.length}</Text>
+                        <Text style={allTasksActive ? styles.filterNumberTextActive : styles.filterNumberText}>{group.tasks.length}</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity 
@@ -136,7 +237,7 @@ const TasksPage = ({ navigation }) => {
                                     <View style= {styles.textContainer}>
                                         <Text style ={styles.highPriorityText}>{task.task}</Text>
                                     </View> 
-                                    <TouchableOpacity style = {styles.highPriorityButton} onPress={() => console.log(`Task ${task.id} pressed!`)}>
+                                    <TouchableOpacity style = {styles.highPriorityButton} onPress={() => setSelectedTask(task)}>
                                         <Text style ={styles.highPriorityButtonText}>Edit task</Text>
                                         <Icon name="create" size={deviceHeight / 40} color='#670038' />
                                     </TouchableOpacity>                               
@@ -156,7 +257,7 @@ const TasksPage = ({ navigation }) => {
                         <View style={styles.normalTask}>
                             <View style={styles.taskLeftContainer}>
                                 <Text style ={styles.normalText}>{task.task}</Text>
-                                <TouchableOpacity style = {styles.normalButton} onPress={() => console.log(`Task ${task.id} pressed!`)}>
+                                <TouchableOpacity style = {styles.normalButton} onPress={() => setSelectedTask(task)}>
                                     <Text style ={styles.normalButtonText}>Edit task</Text>
                                     <Icon name="create" size={deviceHeight / 40} color='white' />
                                 </TouchableOpacity>
@@ -173,6 +274,13 @@ const TasksPage = ({ navigation }) => {
             </View>
         </ScrollView>
         <FloatingNavBar navigation={navigation} />
+        {selectedTask && 
+          <TaskModal 
+            isVisible={!!selectedTask} 
+            task={selectedTask} 
+            onClose={() => setSelectedTask(null)}
+          />
+        }
     </View>
   );
 };

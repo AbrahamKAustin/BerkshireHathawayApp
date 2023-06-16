@@ -22,16 +22,19 @@ const TasksPage = ({ navigation }) => {
       { 
         id: 1, 
         task: 'Meaningful Connections', 
-        isCompleted: false, 
+        isCompleted: false,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
-          { text: "What made this connection meaningful?", answer: "" },
-          { text: "How can you deepen this connection?", answer: "" },
+
         ]
       },
       { 
         id: 2, 
         task: 'Buyer Contract', 
         isCompleted: true,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "What is the contract's value?", answer: "" },
           { text: "What are the key terms?", answer: "" },
@@ -41,6 +44,8 @@ const TasksPage = ({ navigation }) => {
         id: 3, 
         task: 'Social Posts', 
         isCompleted: true,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "What was the engagement on these posts?", answer: "" },
           { text: "What can be improved for future posts?", answer: "" },
@@ -50,6 +55,8 @@ const TasksPage = ({ navigation }) => {
         id: 4, 
         task: 'Hours Prospecting', 
         isCompleted: false,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "How many hours were spent prospecting?", answer: "" },
           { text: "What was the result?", answer: "" },
@@ -59,6 +66,8 @@ const TasksPage = ({ navigation }) => {
         id: 5, 
         task: 'Direct Mail', 
         isCompleted: false,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "How many direct mail pieces were sent?", answer: "" },
           { text: "What was the response rate?", answer: "" },
@@ -68,6 +77,8 @@ const TasksPage = ({ navigation }) => {
         id: 6, 
         task: 'Buyer Consultations', 
         isCompleted: true,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "How many buyer consultations were held?", answer: "" },
           { text: "What were the outcomes?", answer: "" },
@@ -77,6 +88,8 @@ const TasksPage = ({ navigation }) => {
         id: 7, 
         task: 'Prospecting Types', 
         isCompleted: false,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "What types of prospecting were done?", answer: "" },
           { text: "Which type was most effective?", answer: "" },
@@ -86,6 +99,8 @@ const TasksPage = ({ navigation }) => {
         id: 8, 
         task: 'Leads', 
         isCompleted: false,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "How many leads were generated?", answer: "" },
           { text: "What methods were most successful?", answer: "" },
@@ -95,6 +110,8 @@ const TasksPage = ({ navigation }) => {
         id: 9, 
         task: "Seller's Appointments", 
         isCompleted: true,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "How many seller's appointments were held?", answer: "" },
           { text: "What were the results of these appointments?", answer: "" },
@@ -104,6 +121,8 @@ const TasksPage = ({ navigation }) => {
         id: 10, 
         task: 'Listing Appointments', 
         isCompleted: false,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "How many listing appointments were held?", answer: "" },
           { text: "How many resulted in a listing agreement?", answer: "" },
@@ -113,6 +132,8 @@ const TasksPage = ({ navigation }) => {
         id: 11, 
         task: 'Buyer/Tenant Homes', 
         isCompleted: true,
+        description: 'How many successful meaningful connections did you make today', 
+        points: 25,
         questions: [
           { text: "How many homes were found for buyers/tenants?", answer: "" },
           { text: "What were the key factors in finding these homes?", answer: "" },
@@ -122,6 +143,8 @@ const TasksPage = ({ navigation }) => {
         id: 12, 
         task: 'Open House Attendees', 
         isCompleted: false,
+        description: 'How many successful meaningful connections did you make today',
+        points: 25,
         questions: [
           { text: "How many people attended the open house?", answer: "" },
           { text: "How can attendance be increased?", answer: "" },
@@ -130,7 +153,15 @@ const TasksPage = ({ navigation }) => {
     ],
   });
     const [selectedTask, setSelectedTask] = useState(null);
-
+    const completeTask = (taskId) => {
+      setGroup((prevState) => {
+        const newTasks = prevState.tasks.map((task) =>
+          task.id === taskId ? { ...task, isCompleted: true } : task
+        );
+  
+        return { ...prevState, tasks: newTasks };
+      });};
+    
     const [filter, setFilter] = useState('all');
     const [allTasksActive, setAllTasksActive] = useState(true);
     const [incompleteTasksActive, setIncompleteTasksActive] = useState(false);
@@ -279,6 +310,7 @@ const TasksPage = ({ navigation }) => {
             isVisible={!!selectedTask} 
             task={selectedTask} 
             onClose={() => setSelectedTask(null)}
+            onCompleteTask={completeTask} 
           />
         }
     </View>

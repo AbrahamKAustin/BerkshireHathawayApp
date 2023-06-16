@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity, ImageBackground } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import logo1 from "../assets/logo1.png";
+import logo1 from "../assets/purplelogo.png";
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
@@ -36,13 +36,11 @@ const Login = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground style={styles.container} source = {require('../assets/cityfamily1.jpg')}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Icon name="arrow-left" size={deviceHeight / 38} color="#fff" />
+        <Icon name="arrow-left" size={deviceHeight / 30} color="#552448" />
       </TouchableOpacity>
-      <TriangleShape color="#79124A" />
       <Image style={styles.image} source={logo1} />
-      <Text style={styles.title}>Login</Text>
       <View style={styles.inputContainer}>
         <View style={styles.iconInputContainer}>
           <Icon name="envelope" size={deviceHeight / 38} color="#ccc" style={styles.inputIcon} />
@@ -73,7 +71,7 @@ const Login = ({navigation}) => {
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -86,41 +84,21 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     color: 'white',
-    top: '6%',
-    left: '4%',
-  },
-  triangle: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '40%',
-    height: '60%',
-    borderBottomWidth: deviceHeight * 0.7,
-    borderBottomColor: 'transparent',
-    borderRightWidth: deviceHeight * 0.5,
-    borderRightColor: 'transparent',
-    borderLeftColor: 'transparent',
-    borderTopColor: 'transparent',
-    overflow: 'hidden',
-  },
-  triangleInner: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#79124A',
-    transform: [{ rotate: '-90deg' }],
-  },
-  
+    top: '8%',
+    left: '6%',
+  },  
   image: {
     height: deviceHeight * 0.25,
     width: deviceWidth * 0.5,
-    marginBottom: deviceHeight * 0.025,
+    marginBottom: deviceHeight * 0.08,
     marginTop: deviceHeight * 0.2,
+    borderRadius: deviceHeight/2
   },
   title: {
     fontSize: deviceHeight / 30,
     fontFamily: 'manrope',
     fontWeight: "bold",
-    color: 'white',
+    color: 'black',
     marginBottom: deviceHeight * 0.025,
   },
   inputContainer: {
@@ -161,7 +139,7 @@ const styles = StyleSheet.create({
     height: deviceHeight * .07,
   },
   buttonText: {
-    color: '#552448',
+    color: '#670038',
     textAlign: 'center',
     fontSize: deviceHeight / 43,
     fontWeight: 'bold',
@@ -172,7 +150,7 @@ const styles = StyleSheet.create({
     marginTop: deviceHeight * 0.02,
   },
   googleText: {
-    color: '#552448',
+    color: '#670038',
     textAlign: 'center',
     fontSize: deviceHeight / 70,
     marginLeft: deviceWidth * 0.01,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity, ImageBackground } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import logo1 from "../assets/logo1.png";
+import logo1 from "../assets/purplelogo.png";
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
@@ -37,11 +37,10 @@ const Signup = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground style={styles.container } source = {require('../assets/cityfamily2.jpg')}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Icon name="arrow-left" size={deviceHeight / 38} color="#fff" />
+        <Icon name="arrow-left" size={deviceHeight / 30} color="#fff" />
       </TouchableOpacity>
-      <TriangleShape color="#79124A" />
       <Image style={styles.image} source={logo1} />
       <Text style={styles.title}>Create an account</Text>
       <View style={styles.inputContainer}>
@@ -90,7 +89,7 @@ const Signup = ({navigation}) => {
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -103,34 +102,16 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     color: 'white',
-    top: '6%',
-    left: '4%',
+    top: '8%',
+    left: '6%',
   },
-  triangle: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '40%',
-    height: '60%',
-    borderBottomWidth: deviceHeight * 0.7,
-    borderBottomColor: 'transparent',
-    borderRightWidth: deviceHeight * 0.5,
-    borderRightColor: 'transparent',
-    borderLeftColor: 'transparent',
-    borderTopColor: 'transparent',
-    overflow: 'hidden',
-  },
-  triangleInner: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#79124A',
-    transform: [{ rotate: '-90deg' }],
-  },
+
   image: {
-    height: deviceHeight * 0.25,
-    width: deviceWidth * 0.5,
+    height: deviceHeight * 0.20,
+    width: deviceWidth * 0.4,
     marginBottom: deviceHeight * 0.010,
-    marginTop: deviceHeight * 0.07,
+    marginTop: deviceHeight * 0.09,
+    borderRadius: deviceHeight,
   },
   title: {
     fontSize: deviceHeight / 30,

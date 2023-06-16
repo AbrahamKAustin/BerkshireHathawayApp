@@ -10,6 +10,7 @@ import {
 import logo2 from "../assets/logo2.png";
 import { Font } from "expo";
 
+let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const LoginSignup = ({ navigation }) => {
@@ -27,15 +28,16 @@ const LoginSignup = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.circlesContainer}>
-        <View style={styles.circle} />
+        <Image style={styles.circle} source = {require('../assets/city1.jpg')}/>
         <View style={styles.borderCircle} />
       </View>
       <View style={styles.smallerCirclesContainer}>
-        <View style={styles.smallerCircle} />
+        <Image style={styles.smallerCircle} source = {require('../assets/city2.png')}/>
         <View style={styles.smallerBorderCircle} />
       </View>
       <View style={styles.logoContainer}>
         <Image style={styles.image} source={logo2} />
+        <Image style = {styles.goodchildimage} source={require('../assets/thegoodchildteam.png')} />
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -118,9 +120,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   image: {
-    marginBottom: "30%",
     width: "80%",
     height: "30%",
+  },
+  goodchildimage:{
+    marginTop: deviceHeight/25,
+    height: deviceHeight/30,
+    width: deviceWidth/1.6,
   },
   buttonContainer: {
     width: "100%",

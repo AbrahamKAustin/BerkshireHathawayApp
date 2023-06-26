@@ -16,7 +16,8 @@ let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const AnalyticsPage = ({ navigation }) => {
- 
+
+  
   const FloatingNavBar = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.navBarContainer}>
@@ -76,7 +77,7 @@ const AnalyticsPage = ({ navigation }) => {
           </View>
           <View style ={styles.midContainer}>
             <View style ={styles.statsContainer1}>
-            
+        
 
             </View>
             <View style ={styles.statsContainer2}>

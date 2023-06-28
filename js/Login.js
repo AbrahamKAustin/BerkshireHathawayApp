@@ -1,31 +1,57 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity, ImageBackground } from "react-native";
+import React, { useState, useContext} from "react";
+import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity, ImageBackground,  } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import logo1 from "../assets/purplelogo.png";
+import { AuthContext } from './AuthContext';
+import * as SecureStore from 'expo-secure-store';
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
 
-const TriangleShape = ({ color }) => {
-  return (
-    <View style={[styles.triangle, { borderBottomColor: color }]}>
-      <View style={styles.triangleInner} />
-    </View>
-  );
-};
 
 
 const Login = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const authContext = useContext(AuthContext);
 
   const handleLogin = () => {
-    navigation.navigate('Home');
+    const opts = {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "Email": email,
+        "Password": password
+      })
+    }
+  
+    fetch('https://0e9a-2600-1008-a111-f162-d49a-55e7-7d52-16f6.ngrok-free.app/login', opts)
+      .then(response => {
+        if(response.status === 200) return response.json();
+        else throw new Error("Login failed")
+  
+      })
+      .then(data => {
+        console.log(data);
+        // Assuming the JWT token is inside data.access_token
+        const jwt = data.access_token;
+        if (jwt) {
+          authContext.signIn(jwt);
+          console.log('JWT saved successfully');
+          navigation.navigate('Home');
+        } else {
+          console.log('No JWT received');
+        }
+      })
+      .catch(error => {
+        // Handle network errors and failed logins
+        console.error('Error:', error);
+      });
   };
 
-  const handleSignup = () => {
-    // TODO: Sign up the user
-  };
+  
 
   const handleForgotPassword = () => {
     // TODO: Handle forgot password functionality
@@ -48,6 +74,7 @@ const Login = ({navigation}) => {
             style={styles.input}
             placeholder="Email"
             onChangeText={setEmail}
+            value = {email}
           />
         </View>
         <View style={styles.iconInputContainer}>
@@ -56,7 +83,8 @@ const Login = ({navigation}) => {
             style={styles.input}
             placeholder="Password"
             onChangeText={setPassword}
-            secureTextEntry={true} // for password fields
+            secureTextEntry={true}
+            value = {password}
           />
         </View>
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>

@@ -13,4 +13,4 @@ Flask-JWT-Extended
 #create virtual env by using source virt/Scripts/activate (pip freeze)
 
 react native
-secure-storage
+expo-secure-storage

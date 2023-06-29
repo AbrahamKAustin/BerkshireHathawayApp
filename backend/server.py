@@ -88,6 +88,39 @@ class QuestionSchema(ma.Schema):
 question_schema = QuestionSchema()
 questions_schema = QuestionSchema(many=True)
 
+class Teams(db.Model):
+    TeamId = db.Column(db.Integer, primary_key = True)
+    TeamName = db.Column(db.String(50))
+
+    def __init__(self, TeamName):
+        self.TeamName = TeamName
+ 
+class TeamSchema(ma.Schema):
+    class Meta:
+        fields = ('TeamId', 'TeamName')
+
+team_schema = TeamSchema()
+teams_schema = TeamSchema(many=True)
+
+class Realtor_Teams(db.Model):
+    RealtorTeamId = db.Column(db.Integer, primary_key=True)
+    UserId = db.Column(db.String(32), db.ForeignKey('user.id'))
+    TeamId = db.Column(db.Integer, db.ForeignKey('teams.TeamId'))
+
+    user = db.relationship('User', backref=db.backref('Realtor_Teams', lazy=True))
+    team = db.relationship('Teams', backref=db.backref('Realtor_Teams', lazy=True))
+
+    def __init__(self, UserId, TeamId):
+        self.UserId = UserId
+        self.TeamId = TeamId
+
+class Realtor_TeamsSchema(ma.Schema):
+    class Meta:
+        fields = ('RealtorTeamId', 'UserId', 'TeamId')
+
+realtor_teams_schema = Realtor_TeamsSchema()
+realtor_teams_schemas = Realtor_TeamsSchema(many=True)
+
 @app.route("/register", methods = ['POST'])
 def register_user():
     Name = request.json["Name"]
@@ -130,7 +163,7 @@ def get_articles():
     return jsonify({"Hello": "World"})
 
 
-@app.route("/add", methods = ['POST'])
+@app.route("/addTask", methods = ['POST'])
 def add_tasks():
     TaskName = request.json['TaskName']
     TaskPoints = request.json['TaskPoints']
@@ -149,6 +182,36 @@ def add_tasks():
 
     return task_schema.jsonify(task)
 
+@app.route("/addTeam", methods = ['POST'])
+def add_teams():
+    TeamName = request.json['TeamName']
+
+    
+    team = Teams(TeamName)
+    db.session.add(team)
+    db.session.commit()
+
+    return team_schema.jsonify(team)
+
+@app.route("/addToTeam", methods=['POST'])
+def add_to_team():
+    UserName = request.json['UserName']
+    TeamName = request.json['TeamName']
+
+    # Query the User and Teams tables to find the user and team
+    user = User.query.filter_by(Name=UserName).first()
+    team = Teams.query.filter_by(TeamName=TeamName).first()
+
+    if user is None or team is None:
+        # If the user or team wasn't found, return an error
+        return jsonify({'error': 'User or team not found'}), 404
+
+    # Create a new Realtor_Teams instance
+    realtor_team = Realtor_Teams(user.id, team.TeamId)
+    db.session.add(realtor_team)
+    db.session.commit()
+
+    return realtor_teams_schema.jsonify(realtor_team)
 
 if __name__ == "__main__":
     from server import app, db

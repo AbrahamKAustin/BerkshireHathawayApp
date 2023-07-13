@@ -28,7 +28,7 @@ const AnalyticsPage = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navBarButton}
-          onPress={() => navigation.navigate("")}>
+          onPress={() => navigation.navigate("LeaderboardPage")}>
           <Icon name="podium" size={deviceHeight / 38} color="#670038" />
         </TouchableOpacity>
         <TouchableOpacity

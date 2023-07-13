@@ -12,6 +12,8 @@ import TasksPage from './js/TasksPage';
 import ProfilePage from './js/ProfilePage';
 import AnalyticsPage from './js/AnalyticsPage';
 import EditPage from './js/EditPage';
+import LeaderboardPage from './js/LeaderboardPage';
+
 
 import { AuthContext } from './js/AuthContext';  // import the context you created
 
@@ -62,6 +64,7 @@ const App = () => {
           <Stack.Screen name="ProfilePage" component={ProfilePage} />
           <Stack.Screen name="AnalyticsPage" component={AnalyticsPage} />
           <Stack.Screen name="EditPage" component={EditPage} />
+          <Stack.Screen name="LeaderboardPage" component={LeaderboardPage} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>

@@ -91,18 +91,20 @@ questions_schema = QuestionSchema(many=True)
 class Teams(db.Model):
     TeamId = db.Column(db.Integer, primary_key = True)
     TeamName = db.Column(db.String(50))
+    DatePublished = db.Column(db.DateTime, default = datetime.datetime.now)
 
     def __init__(self, TeamName):
         self.TeamName = TeamName
+
  
 class TeamSchema(ma.Schema):
     class Meta:
-        fields = ('TeamId', 'TeamName')
+        fields = ('TeamId', 'TeamName', 'DatePublished')
 
 team_schema = TeamSchema()
 teams_schema = TeamSchema(many=True)
 
-class Realtor_Teams(db.Model):
+class Realtor_Teams(db.Model): 
     RealtorTeamId = db.Column(db.Integer, primary_key=True)
     UserId = db.Column(db.String(32), db.ForeignKey('user.id'))
     TeamId = db.Column(db.Integer, db.ForeignKey('teams.TeamId'))
@@ -120,6 +122,49 @@ class Realtor_TeamsSchema(ma.Schema):
 
 realtor_teams_schema = Realtor_TeamsSchema()
 realtor_teams_schemas = Realtor_TeamsSchema(many=True)
+
+class Team_Task(db.Model):
+    __tablename__ = 'team_task'
+    TeamTaskId = db.Column(db.Integer, primary_key=True)
+    TeamId = db.Column(db.Integer, db.ForeignKey('teams.TeamId'))
+    TaskId = db.Column(db.Integer, db.ForeignKey('tasks.TaskId'))
+
+    team = db.relationship('Teams', backref=db.backref('team_task', lazy=True))
+    task = db.relationship('Tasks', backref=db.backref('team_task', lazy=True))
+
+    def __init__(self, TeamId, TaskId):
+        self.TeamId = TeamId
+        self.TaskId = TaskId
+
+class Team_TaskSchema(ma.Schema):
+    class Meta:
+        fields = ('TeamTaskId', 'TeamId', 'TaskId')
+
+team_task_schema = Team_TaskSchema()
+team_tasks_schema = Team_TaskSchema(many=True)
+
+class Realtor_Task(db.Model):
+    __tablename__ = 'realtor_task'
+    RealtorTaskId = db.Column(db.Integer, primary_key=True)
+    RealtorId = db.Column(db.String(32), db.ForeignKey('user.id'))
+    TaskId = db.Column(db.Integer, db.ForeignKey('tasks.TaskId'))
+    NumericAnswer = db.Column(db.Integer)
+    CompletionDate = db.Column(db.DateTime)
+    CompletionStatus = db.Column(db.String(50))
+    PointsEarned = db.Column(db.Integer)
+
+    realtor = db.relationship('User', backref=db.backref('realtor_task', lazy=True))
+    task = db.relationship('Tasks', backref=db.backref('realtor_task', lazy=True))
+
+    def __init__(self, RealtorId, TaskId, NumericAnswer, CompletionDate, CompletionStatus, PointsEarned):
+        self.RealtorId = RealtorId
+        self.TaskId = TaskId
+        self.NumericAnswer = NumericAnswer
+        self.CompletionDate = CompletionDate
+        self.CompletionStatus = CompletionStatus
+        self.PointsEarned = PointsEarned
+
+
 
 @app.route("/register", methods = ['POST'])
 def register_user():
@@ -166,7 +211,7 @@ def get_articles():
 @app.route("/addTask", methods = ['POST'])
 def add_tasks():
     TaskName = request.json['TaskName']
-    TaskPoints = request.json['TaskPoints']
+    TaskPoints = request.json['TaskPoints'] 
     TextDescription = request.json['TextDescription']
     Publisher = request.json['Publisher']
     questions = request.json['Questions']
@@ -198,20 +243,53 @@ def add_to_team():
     UserName = request.json['UserName']
     TeamName = request.json['TeamName']
 
-    # Query the User and Teams tables to find the user and team
     user = User.query.filter_by(Name=UserName).first()
     team = Teams.query.filter_by(TeamName=TeamName).first()
 
     if user is None or team is None:
-        # If the user or team wasn't found, return an error
         return jsonify({'error': 'User or team not found'}), 404
 
-    # Create a new Realtor_Teams instance
     realtor_team = Realtor_Teams(user.id, team.TeamId)
     db.session.add(realtor_team)
+
+    # Get all tasks associated with the team
+    team_tasks = Team_Task.query.filter_by(TeamId=team.TeamId).all()
+
+    # For each task, create a Realtor_Task entry
+    for team_task in team_tasks:
+        realtor_task = Realtor_Task(user.id, team_task.TaskId, NumericAnswer=None, CompletionDate=None, CompletionStatus=None, PointsEarned=0)
+        db.session.add(realtor_task)
+
     db.session.commit()
 
     return realtor_teams_schema.jsonify(realtor_team)
+
+@app.route("/addTaskToTeam", methods=['POST'])
+def add_task_to_team():
+    TeamName = request.json['TeamName']
+    TaskName = request.json['TaskName']
+
+    team = Teams.query.filter_by(TeamName=TeamName).first()
+    task = Tasks.query.filter_by(TaskName=TaskName).first()
+
+    if team is None or task is None:
+        return jsonify({'error': 'Team or task not found'}), 404
+
+    team_task = Team_Task(team.TeamId, task.TaskId)
+    db.session.add(team_task)
+
+    # Get all realtors associated with the team
+    realtor_teams = Realtor_Teams.query.filter_by(TeamId=team.TeamId).all()
+
+    # For each realtor, create a Realtor_Task entry
+    for realtor_team in realtor_teams:
+        realtor_task = Realtor_Task(realtor_team.UserId, task.TaskId, NumericAnswer=None, CompletionDate=None, CompletionStatus=None, PointsEarned=0)
+        db.session.add(realtor_task)
+
+    db.session.commit()
+
+    return team_task_schema.jsonify(team_task)
+
 
 if __name__ == "__main__":
     from server import app, db

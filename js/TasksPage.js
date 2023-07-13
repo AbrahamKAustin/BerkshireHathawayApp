@@ -192,7 +192,7 @@ const TasksPage = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.navBarButton}
-              onPress={() => navigation.navigate("Signup")}>
+              onPress={() => navigation.navigate("LeaderboardPage")}>
               <Icon name="podium" size={deviceHeight / 38} color="#670038" />
             </TouchableOpacity>
             <TouchableOpacity

@@ -27,7 +27,7 @@ const Login = ({navigation}) => {
       })
     }
   
-    fetch('https://0e9a-2600-1008-a111-f162-d49a-55e7-7d52-16f6.ngrok-free.app/login', opts)
+    fetch('https://2226-2600-1008-a101-4d9-4898-7cd3-6410-3d48.ngrok-free.app/login', opts)
       .then(response => {
         if(response.status === 200) return response.json();
         else throw new Error("Login failed")

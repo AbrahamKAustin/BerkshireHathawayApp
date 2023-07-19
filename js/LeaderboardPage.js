@@ -130,7 +130,7 @@ const LeaderboardPage = ({ navigation }) => {
                 <View style = {styles.twoContainer}>
                     <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
                     <Text style= {styles.topThreeName}> Liz Goodchild</Text>
-                    <Text style= {styles.topThreePoints}> 3780</Text>
+                    <Text style= {styles.topThreePoints}> {group.tasks.find(task => task.id === 2)?.points || 0}</Text>
                     <TouchableOpacity style = {styles.silverContainer}>
                         <Text style = {styles.twoText}>2</Text>
 
@@ -140,7 +140,7 @@ const LeaderboardPage = ({ navigation }) => {
                 <View style = {styles.oneContainer}>
                     <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
                     <Text style= {styles.topThreeName}> Liz Goodchild</Text>
-                    <Text style= {styles.topThreePoints}> 3780</Text>
+                    <Text style= {styles.topThreePoints}> {group.tasks.find(task => task.id === 1)?.points || 0}</Text>
                     <TouchableOpacity style = {styles.goldContainer}>
                         <Text style = {styles.oneText}>1</Text>
                     </TouchableOpacity>
@@ -149,7 +149,7 @@ const LeaderboardPage = ({ navigation }) => {
                 <View style = {styles.threeContainer}>
                     <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
                     <Text style= {styles.topThreeName}> Liz Goodchild</Text>
-                    <Text style= {styles.topThreePoints}> 3780</Text>
+                    <Text style= {styles.topThreePoints}> {group.tasks.find(task => task.id === 3)?.points || 0}</Text>
                     <TouchableOpacity style = {styles.bronzeContainer}>
                         <Text style = {styles.threeText}>3</Text>
 
@@ -173,7 +173,7 @@ const LeaderboardPage = ({ navigation }) => {
                                 <View width = '53%' marginLeft = {deviceWidth/30}>
                                     <Text style = {styles.normalNameText}> {task.task}</Text>
                                 </View>
-                                <Text style = {styles.normalPointsText}> {task.points}</Text>
+                                <Text style = {styles.normalPointsText}> {task.points || 0}</Text>
                             </View>
                             <View style = {styles.bottom}>
                                 <Text style = {styles.viewStatsText}>View stats</Text>

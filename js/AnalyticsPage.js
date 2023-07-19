@@ -16,8 +16,77 @@ let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const AnalyticsPage = ({ navigation }) => {
+  const [group, setGroup] = useState({
+    name: "Battle of the Generations",
+    tasks: [
+      { 
+        id: 1, 
+        task: 'Meaningful Connections', 
+        points: 234
+      },
+      { 
+        id: 2, 
+        task: 'Buyer Contract', 
 
-  
+      },
+      { 
+        id: 3, 
+        task: 'Social Posts', 
+
+      },
+      { 
+        id: 4, 
+        task: 'Hours Prospecting', 
+        points:2345
+      },
+      { 
+        id: 5, 
+        task: 'Direct Mail', 
+
+      },
+      { 
+        id: 6, 
+        task: 'Buyer Consultations', 
+
+      },
+      { 
+        id: 7, 
+        task: 'Prospecting Types', 
+
+      },
+      { 
+        id: 8, 
+        task: 'Leads', 
+
+      },
+      { 
+        id: 9, 
+        task: "Seller's Appointments", 
+
+      },
+      { 
+        id: 10, 
+        task: 'Listing Appointments', 
+
+      },
+      { 
+        id: 11, 
+        task: 'Buyer/Tenant Homes', 
+
+      },
+      { 
+        id: 12, 
+        task: 'Open House Attendees', 
+
+      },
+    ],
+  });
+
+  let realtors = [];
+  for(let i = 0; i < group.tasks.length; i++) {
+      realtors.push(group.tasks[i]);
+  }
+
   const FloatingNavBar = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.navBarContainer}>
@@ -74,18 +143,90 @@ const AnalyticsPage = ({ navigation }) => {
 
                 </View>
             </View>
-          </View>
-          <View style ={styles.midContainer}>
-            <View style ={styles.statsContainer1}>
-        
+            <View style ={{width: '100%', height: deviceHeight/500, backgroundColor: 'white', marginTop: deviceHeight/60}}/>
 
+            <View style = {styles.bottomOfCurvedContainer}>
+              <View style = {styles.curveContainers}>
+                <Text style = {styles.curvedText}> Buyer Contracts</Text>
+                <Text style = {styles.curvedText}> 6</Text>
+
+              </View>
+              <View style = {styles.curveContainers}>
+                <Text style = {styles.curvedText}> Seller's Appointments</Text>
+                <Text style = {styles.curvedText}> 12</Text>
+              </View>
             </View>
-            <View style ={styles.statsContainer2}>
-            
-
-            </View>
 
           </View>
+          <View style={styles.analyticsContainer}>
+            {realtors.map((task) => {
+               
+
+                    return (
+                        <View style = {styles.normalSection}>
+                            <Text style = {styles.analyticsTitle}>{task.task}</Text>
+                            <View style ={{width: '50%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
+                            <View style = {styles.semiTitleContainer}>
+                              <Text style = {styles.semiAnalyticsTitle}>Past 4 weeks:</Text>
+                            </View>
+                            <View style = {styles.statsContainer}>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>W1:</Text>
+                                <Text style = {styles.weekMonthStatsText}>12</Text>
+                              </View>
+                              <View style ={styles.smallLine}/>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>W2:</Text>
+                                <Text style = {styles.weekMonthStatsText}>17</Text>
+                              </View>
+                              <View style ={styles.smallLine}/>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>W3:</Text>
+                                <Text style = {styles.weekMonthStatsText}>9</Text>
+                              </View>
+                              <View style ={styles.smallLine}/>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>W4:</Text>
+                                <Text style = {styles.weekMonthStatsText}>14</Text>
+                              </View>
+                            </View>
+
+                            <View style = {{flexDirection: 'row', marginTop: deviceHeight/30}}>
+                              <Text style = {styles.monthAvgTitle}>Monthly Average: </Text>
+                              <Text style = {styles.monthAvgStat}>48</Text>
+                            </View>
+                            <View style ={{width: '35%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
+
+                            <View style = {styles.semiTitleContainer}>
+                              <Text style = {styles.semiAnalyticsTitle}>Past 4 months:</Text>
+                            </View>
+
+                            <View style = {styles.statsContainer}>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>M1:</Text>
+                                <Text style = {styles.weekMonthStatsText}>52</Text>
+                              </View>
+                              <View style ={styles.smallLine}/>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>M2:</Text>
+                                <Text style = {styles.weekMonthStatsText}>46</Text>
+                              </View>
+                              <View style ={styles.smallLine}/>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>M3:</Text>
+                                <Text style = {styles.weekMonthStatsText}>33</Text>
+                              </View>
+                              <View style ={styles.smallLine}/>
+                              <View style = {styles.fourStatsContainer}>
+                                <Text style = {styles.weekMonthText}>M4:</Text>
+                                <Text style = {styles.weekMonthStatsText}>67</Text>
+                              </View>
+                            </View>
+                        </View>                    
+                    );
+                
+            })}
+            </View>
       </ScrollView>
       <FloatingNavBar navigation={navigation} />
 
@@ -101,11 +242,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   curvedContainer:{
-    height:deviceHeight/2,
+    height:deviceHeight/3.9,
     width: deviceWidth,
     borderBottomLeftRadius: 45, // adjust the value as needed
     borderBottomRightRadius: 45, // adjust the value as needed
     backgroundColor: '#670038', // or any other color
+    marginBottom:deviceHeight/25,
   },
   topContainer: {
     alignItems: "center",
@@ -113,6 +255,24 @@ const styles = StyleSheet.create({
     width: deviceWidth,
     height: deviceHeight * 0.14,
     padding: deviceWidth * 0.05,
+  },
+  bottomOfCurvedContainer: {
+    flexDirection: 'row',
+    width: deviceWidth,
+    height: deviceHeight * 0.093,
+    padding: deviceWidth * 0.05,
+  },
+  curveContainers:{
+    alignItems: "center",
+    justifyContent: "center",
+    width: '50%',
+    height: '100%',
+  },
+  curvedText: {
+    fontSize: deviceHeight / 50,
+    fontFamily: "manrope",
+    //fontWeight: "bold",
+    color: "white",
   },
   backButton: {
     position: 'absolute',
@@ -137,29 +297,95 @@ const styles = StyleSheet.create({
     fontWeight: "light",
     color: "white",
   },
-  midContainer:{
-    height:deviceHeight/2.3,
-    width: deviceWidth,
+  avatar: {
+    width: deviceWidth * 0.1,
+    height: deviceWidth * 0.1,
+    borderRadius: (deviceWidth * 0.12) / 2,
+  },
+  analyticsContainer: {
+    width: '100%',
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    marginBottom: deviceHeight/6,
     alignItems: 'center',
-    justifyContent: 'space-around',
+  },
+  normalSection: {
+    backgroundColor: "white",
+    alignItems: 'center',
+    //justifyContent: 'center',
+    height: deviceHeight/2.6,    
+    width: deviceWidth/1.17,
+    marginBottom: deviceHeight/60,
+    padding: deviceHeight/50 ,
+    borderRadius: deviceWidth/40,
+    shadowColor: "#000",
+    shadowOffset: {
+        width: -10,
+        height: 0,
+      },
+      shadowOpacity: 0.58,
+      shadowRadius: 16.00,
+  },
+  semiTitleContainer:{
+    width: '100%', 
+    height: deviceHeight/30, 
+    justifyContent: 'center', 
+    margin: deviceWidth/ 100,
+  },
+  statsContainer:{
+    width: '100%', 
+    height: deviceHeight/20, 
     flexDirection: 'row'
-
   },
-  statsContainer1: {
-    height:deviceHeight/3.2,
-    width: deviceWidth/2.3,
-    backgroundColor: '#670038', 
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    borderRadius: deviceWidth/20,
+  fourStatsContainer:{
+    width: '25%',
+    height: '100%',
+    alignItems:'center',
+    justifyContent: 'center',
   },
-  statsContainer2: {
-    height:deviceHeight/3.2,
-    width: deviceWidth/2.3,
-    backgroundColor: '#EAE3D4', 
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    borderRadius: deviceWidth/20,
+  smallLine:{
+    width: deviceWidth/300, 
+    height: '70%', 
+    backgroundColor: '#b7b7b7', 
+    marginTop: deviceHeight/60
+  },
+  analyticsTitle: {
+    marginTop: deviceHeight/ 150,
+    fontSize: deviceHeight / 40,
+    fontFamily: "manrope",
+    fontWeight: "bold",
+    color: "black",
+  },
+  semiAnalyticsTitle: {
+    fontSize: deviceHeight/ 53 ,
+    fontFamily: "manrope",
+    color: "#7c7c7c",
+  },  
+  monthAvgTitle: {
+    fontSize: deviceHeight/ 45 ,
+    fontFamily: "manrope",
+    fontWeight: "bold",
+    color: "black",
+  },
+  monthAvgStat: {
+    fontSize: deviceHeight/ 45 ,
+    fontFamily: "manrope",
+    fontWeight: "bold",
+    color: "#791248",
+  },
+  weekMonthText: {
+    justifyContent: 'flex-end',
+    fontSize: deviceHeight / 48,
+    fontFamily: "manrope",
+    fontWeight: "bold",
+    color: "black", 
+    marginTop: deviceHeight/70,
+  },
+  weekMonthStatsText: {
+    fontSize: deviceHeight / 48,
+    fontFamily: "manrope",
+    color: "#791248", 
+    marginLeft: deviceWidth/68
   },
   navBarContainer: {
     flexDirection: "row",

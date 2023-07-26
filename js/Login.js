@@ -27,14 +27,13 @@ const Login = ({navigation}) => {
       })
     }
   
-    fetch('https://2226-2600-1008-a101-4d9-4898-7cd3-6410-3d48.ngrok-free.app/login', opts)
+    fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/login', opts)
       .then(response => {
         if(response.status === 200) return response.json();
         else throw new Error("Login failed")
   
       })
       .then(data => {
-        console.log(data);
         // Assuming the JWT token is inside data.access_token
         const jwt = data.access_token;
         if (jwt) {

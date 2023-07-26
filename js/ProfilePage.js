@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -11,19 +11,83 @@ import {
   ScrollView
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { AuthContext } from "./AuthContext";
+import { useContext } from "react";
+import { LeaderboardContext } from './LeaderboardContext';
+import { UserContext, isLoading } from './UserContext';
+import * as SecureStore from 'expo-secure-store';
 
+import {LoadingScreen} from './LoadingScreen';
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const ProfilePage = ({ navigation }) => {
-  const [userData, setUserData] = useState({
-    profileName: "",
-    email: "",
-    totalPoints: "",
-    rank: "",
-    groups: [],
-    posterAvatar: "", // Assuming you want to add a posterAvatar property
-  });
+  console.log('ProfilePage component rendering');
+  const [post, setPost] = useState([]);
+  const authContext = useContext(AuthContext);
+  const userToken = authContext.userToken;
+  const userId = userToken ? userToken.sub : null;
+  const { totalPoints, rank, groupRankings} = useContext(LeaderboardContext)
+  const [userTeams, setUserTeams] = useState([]); 
+  const { userData, isLoading, userRole} = useContext(UserContext);
+  console.log('groupRankings', groupRankings);
+  console.log('userTeams', userTeams);
+  console.log('userData', userData);
+
+  if (isLoading) {
+    return <LoadingScreen />; // Render a loading screen if userData is not available
+  }
+  useEffect(() => {
+    console.log('useEffect component rendering');
+    if (!userId) return;
+    SecureStore.getItemAsync('jwt').then(token => {
+      fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/user_teams/' + userId, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        setPost(data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    });
+    }, [userId]);
+    console.log('post', post);
+
+// First, add a state variable for the old ranks
+const [oldRanks, setOldRanks] = useState({});
+const [teamsWithCHG, setTeamsWithCHG] = useState([]); // to store teams with their change in rank
+
+useEffect(() => {
+  if (post && groupRankings) {
+    // Save the current ranks before updating
+    setOldRanks(groupRankings.reduce((acc, ranking) => ({...acc, [ranking.userId]: ranking.rank}), {}));
+    const teamsWithRankAndPoints = groupRankings.map(ranking => {
+      const team = post.find(p => String(p.TeamId) === String(ranking.TeamId));
+      return { ...ranking, TeamName: team ? team.TeamName : null };
+    });
+    setUserTeams(teamsWithRankAndPoints);
+  }
+}, [post, groupRankings]);
+
+useEffect(() => {
+  if (userTeams.length > 0) {
+    const computedTeamsWithCHG = userTeams.map(team => ({
+      ...team,
+      CHG: oldRanks[team.userId] ? oldRanks[team.userId] - team.rank : 0
+    }));
+    setTeamsWithCHG(computedTeamsWithCHG);
+  }
+}, [oldRanks, userTeams]);
+
+    
+    
+
   const FloatingNavBar = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.navBarContainer}>
@@ -41,38 +105,12 @@ const ProfilePage = ({ navigation }) => {
       </SafeAreaView>
     );
   };
-  useEffect(() => {
-    fetchUserDataFromDatabase();
-  }, []);
 
-  const fetchUserDataFromDatabase = () => {
-    const dataFromDatabase = {
-      profileName: "Elizabeth Goodchild",
-      email: "lgoodchild@starckre.com",
-      totalPoints: "432",
-      rank: "Diamond",
-      groups: [
-        {
-          groupName: "Battle of the Generations",
-          points: "328",
-          position: "3",
-          change: "+6",
-        },
-        {
-          groupName: "Battle of the Generations",
-          points: "328",
-          position: "3",
-          change: "+6",
-        },
-      ],
-      posterAvatar: require('../assets/lgoodchild.png'),
-    };
-
-    setUserData(dataFromDatabase);
-  };
 
   const handleLogout = () => {
-    navigation.navigate('LoginSignup');
+    authContext.signOut().then(() => {
+      navigation.navigate('LoginSignup');
+    });
   };
 
   return (
@@ -81,10 +119,10 @@ const ProfilePage = ({ navigation }) => {
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>Profile</Text>
           <View alignItems={"flex-end"} marginLeft={deviceWidth/4} padding="2%">
-            <Text style={styles.name}>{userData.profileName}</Text>
-            <Text style={styles.roleText}>{"Admin"}</Text>
+            <Text style={styles.name}>{userData.Name}</Text>
+            <Text style={styles.roleText}>{userRole}</Text>
           </View>
-          <Image style={styles.avatar} source={userData.posterAvatar } />
+          <Image style={styles.avatar} source={require('../assets/lgoodchild.png')} />
         </View>
 
         <View style={styles.profileContainer}>
@@ -101,18 +139,18 @@ const ProfilePage = ({ navigation }) => {
             </View>
             <View style={styles.midProfileContainer}>
               <View style={styles.textContainer}>
-                <Text style={styles.profileName}>{userData.profileName}</Text>
-                <Text style={styles.emailText}>{userData.email}</Text>
+                <Text style={styles.profileName}>{userData.Name}</Text>
+                <Text style={styles.emailText}>{userData.Email}</Text>
               </View>
             </View>
             <View style={styles.profileStats}>
               <View style={styles.statsColumns}>
                 <Text style={styles.profileStatsTitle}>Total Points</Text>
-                <Text style={styles.profileStatsText}>{userData.totalPoints}</Text>
+                <Text style={styles.profileStatsText}>{totalPoints}</Text>
               </View>
               <View style={styles.statsColumns}>
                 <Text style={styles.profileStatsTitle}>Rank</Text>
-                <Text style={styles.profileStatsText}>{userData.rank}</Text>
+                <Text style={styles.profileStatsText}>{rank}</Text>
               </View>
             </View>
           </ImageBackground>
@@ -121,29 +159,32 @@ const ProfilePage = ({ navigation }) => {
         <View style={styles.groupsTextContainer}>
           <Text style={styles.groupsText}>Groups</Text>
         </View>
-
-        {userData.groups.map((group, index) => (
+        
+        
+        {teamsWithCHG.map((team, index) => (
           <View key={index} style={index % 2 === 0 ? styles.group1 : styles.group2}>
             <View style = {index % 2 === 0 ? styles.group1BorderCircle1 : styles.group2BorderCircle1}/> 
             <View style = {index % 2 === 0 ? styles.group1BorderCircle2 : styles.group2BorderCircle2}/>
             <View style = {index % 2 === 0 ? styles.group1BorderCircle3 : styles.group2BorderCircle3}/>
-            <Text style={index % 2 === 0 ? styles.group1Text : styles.group2Text}>{group.groupName}</Text>
+            <Text style={index % 2 === 0 ? styles.group1Text : styles.group2Text}>{team.TeamName}</Text>
             <View style={index % 2 === 0 ? styles.group1StatsContainer : styles.group2StatsContainer}>
               <View style={styles.groupStatsColumns}>
                 <Text style={index % 2 === 0 ? styles.group1StatsTitle : styles.group2StatsTitle}>PTS</Text>
-                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{group.points}</Text>
+                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{team.points}</Text>
               </View>
               <View style={styles.groupStatsColumns}>
                 <Text style={index % 2 === 0 ? styles.group1StatsTitle : styles.group2StatsTitle}>POS</Text>
-                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{group.position}</Text>
+                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{team.rank}</Text>
               </View>
+
               <View style={styles.groupStatsColumns}>
                 <Text style={index % 2 === 0 ? styles.group1StatsTitle : styles.group2StatsTitle}>CHG</Text>
-                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{group.change}</Text>
+                <Text style={index % 2 === 0 ? styles.group1StatsText : styles.group2StatsText}>{team.CHG}</Text>
               </View>
             </View>
           </View>
         ))}
+        
         <TouchableOpacity  style = {styles.button} onPress={handleLogout}>
           <Text style ={styles.buttonText}>Log out</Text>
           <Icon name="log-out" size={deviceHeight / 40} color='#670038' />

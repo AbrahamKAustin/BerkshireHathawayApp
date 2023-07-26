@@ -11,19 +11,41 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
+import { AuthContext } from "./AuthContext";
+import { useContext } from "react";
+import { useEffect } from "react";
+import avatar from "../assets/lgoodchild.png";
+import banner from "../assets/books.png";
+import * as SecureStore from 'expo-secure-store';
+import { LeaderboardContext } from './LeaderboardContext';
+
+
 
 const Home = ({ navigation }) => {
-  const [points, setPoints] = useState(0);
-  const [rank, setRank] = useState("Beginner");
+  const [post, setPost] = useState([]);
+  const authContext = useContext(AuthContext);
+  const userToken = authContext.userToken;
+  const userId = userToken ? userToken.sub : null;
+  useEffect(() => {
+    SecureStore.getItemAsync('jwt').then(token => {
+      fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/user_teams/' + userId, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        setPost(data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    });
+  }, []);
+  const { totalPoints, rank } = useContext(LeaderboardContext);
 
-  const [post, setPost] = useState({
-    name: "Liz Goodchild",
-    groupName: "Battle of the Generations",
-    posterName: "Poster Name",
-    posterAvatar: require("../assets/lgoodchild.png"),
-    postImage: require("../assets/books.png"),
-    startDate: "05/23",
-  });
 
   const FloatingNavBar = ({ navigation }) => {
     return (
@@ -43,8 +65,8 @@ const Home = ({ navigation }) => {
     );
   };
 
-  const handleContinue = () => {
-    navigation.navigate('TasksPage');
+  const handleContinue = (post) => {
+    navigation.navigate('TasksPage', {post});
   };
 
   return (
@@ -59,42 +81,48 @@ const Home = ({ navigation }) => {
         <Text style={styles.titleText}>Home</Text>
         <View style={styles.pointContainer}>
           <Text style={styles.pointText}>
-            {"Points:"} {points}
+            {"Points:"} {totalPoints}
             {" | Rank:"} {rank}
           </Text>
         </View>
       </View>
+      
+      {post && post.map((post, index) => (
 
-      <TouchableOpacity style={styles.groupContainer} onPress={handleContinue}>
-        <View style={styles.smallerCirclesContainer}>
-          <View style={styles.smallerCircle} />
-        </View>
-        <View style={styles.biggerCirclesContainer}>
-          <View style={styles.biggerCircle} />
-        </View>
-        <View style={styles.topGroupContainer}>
-          <Image style={styles.avatar} source={post.posterAvatar} />
-          <View justifyContent={"center"} padding="2%">
-            <Text style={styles.name}>{post.name}</Text>
-            <Text style={styles.greyName}>{"Posted by"}</Text>
+        <TouchableOpacity style={styles.groupContainer} onPress={() => handleContinue(post)}>
+          <View style={styles.smallerCirclesContainer}>
+            <View style={styles.smallerCircle} />
           </View>
-        </View>
-        <View style={styles.midGroupContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.groupName} >
-              {post.groupName}
-            </Text>
+          <View style={styles.biggerCirclesContainer}>
+            <View style={styles.biggerCircle} />
           </View>
-          <View justifyContent={"center"}>
-            <Text style={styles.name}>{post.startDate}</Text>
-            <Text style={styles.greyName}>{"Start Date"}</Text>
+          <View style={styles.topGroupContainer}>
+            <Image style={styles.avatar} source={avatar} />
+            <View justifyContent={"center"} padding="2%">
+              <Text style={styles.name}>{post.Publisher}</Text>
+              <Text style={styles.greyName}>{"Posted by"}</Text>
+            </View>
           </View>
-        </View>
-        <Image style={styles.postImage} source={post.postImage} />
-      </TouchableOpacity>
+          <View style={styles.midGroupContainer}>
+            <View style={styles.textContainer}>
+              <Text style={styles.groupName} >
+                {post.TeamName}
+              </Text>
+            </View>
+            <View justifyContent={"center"}>
+              <Text style={styles.name}>
+                {`${(new Date(post.DatePublished).getMonth() + 1).toString().padStart(2, '0')}/${new Date(post.DatePublished).getFullYear().toString().substr(-2)}`}
+              </Text>              
+              <Text style={styles.greyName}>{"Start Date"}</Text>
+            </View>
+          </View>
+          <Image style={styles.postImage} source={banner} />
+        </TouchableOpacity>
+        ))}
+      {post.length > 0 && (
 
       <View style={styles.smallRectangle}>
-        <Text style={styles.rectangleText}>{post.groupName}</Text>
+        <Text style={styles.rectangleText}>{post[post.length - 1].TeamName}</Text>
         <TouchableOpacity
           style={styles.continueButton}
           onPress={handleContinue}
@@ -103,8 +131,9 @@ const Home = ({ navigation }) => {
           <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />
         </TouchableOpacity>
       </View>
+      )}
       <FloatingNavBar navigation={navigation} />
-    </View>
+      </View>
   );
 };
 

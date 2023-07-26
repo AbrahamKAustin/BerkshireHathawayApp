@@ -6,26 +6,45 @@ import logo1 from "../assets/purplelogo.png";
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
 
-const TriangleShape = ({ color }) => {
-  return (
-    <View style={[styles.triangle, { borderBottomColor: color }]}>
-      <View style={styles.triangleInner} />
-    </View>
-  );
-};
-
 const Signup = ({navigation}) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const handleLogin = () => {
-    // TODO: Login the user
-  };
-
   const handleSignUp = () => {
-    navigation.navigate('Home');
+    if (password !== confirm) {
+      alert('Passwords do not match');
+      return;
+    }
+    if (!email.includes('@')) {
+      alert('Invalid email');
+      return;
+    }
+    const opts = {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        Name: name,
+        Email: email,
+        Password: password,
+      })
+    }
+
+    fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/register', opts)
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        console.error('Error:', data.error);
+      } else {
+        navigation.navigate('Home');
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
   };
 
   const handleForgotPassword = () => {

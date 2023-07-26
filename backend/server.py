@@ -10,6 +10,7 @@ from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from uuid import uuid4
 import os
+from flask import current_app
 
 app = Flask(__name__)
 
@@ -91,20 +92,23 @@ questions_schema = QuestionSchema(many=True)
 class Teams(db.Model):
     TeamId = db.Column(db.Integer, primary_key = True)
     TeamName = db.Column(db.String(50))
+    Publisher = db.Column(db.String(50))
     DatePublished = db.Column(db.DateTime, default = datetime.datetime.now)
 
-    def __init__(self, TeamName):
+    def __init__(self, TeamName, Publisher):
         self.TeamName = TeamName
+        self.Publisher = Publisher
 
- 
+
 class TeamSchema(ma.Schema):
     class Meta:
-        fields = ('TeamId', 'TeamName', 'DatePublished')
+        fields = ('TeamId', 'TeamName', 'DatePublished', 'Publisher')
 
 team_schema = TeamSchema()
 teams_schema = TeamSchema(many=True)
 
 class Realtor_Teams(db.Model): 
+    __tablename__ = 'realtor_teams'
     RealtorTeamId = db.Column(db.Integer, primary_key=True)
     UserId = db.Column(db.String(32), db.ForeignKey('user.id'))
     TeamId = db.Column(db.Integer, db.ForeignKey('teams.TeamId'))
@@ -147,24 +151,53 @@ class Realtor_Task(db.Model):
     __tablename__ = 'realtor_task'
     RealtorTaskId = db.Column(db.Integer, primary_key=True)
     RealtorId = db.Column(db.String(32), db.ForeignKey('user.id'))
+    TeamId = db.Column(db.Integer, db.ForeignKey('teams.TeamId'))
     TaskId = db.Column(db.Integer, db.ForeignKey('tasks.TaskId'))
     NumericAnswer = db.Column(db.Integer)
     CompletionDate = db.Column(db.DateTime)
     CompletionStatus = db.Column(db.String(50))
-    PointsEarned = db.Column(db.Integer)
 
+    team = db.relationship('Teams', backref = db.backref('realtor_task', lazy = True))
     realtor = db.relationship('User', backref=db.backref('realtor_task', lazy=True))
     task = db.relationship('Tasks', backref=db.backref('realtor_task', lazy=True))
 
-    def __init__(self, RealtorId, TaskId, NumericAnswer, CompletionDate, CompletionStatus, PointsEarned):
+    def __init__(self, RealtorId, TaskId, NumericAnswer, CompletionDate, CompletionStatus, TeamId):
+        self.TeamId = TeamId
         self.RealtorId = RealtorId
         self.TaskId = TaskId
         self.NumericAnswer = NumericAnswer
         self.CompletionDate = CompletionDate
         self.CompletionStatus = CompletionStatus
-        self.PointsEarned = PointsEarned
+
+class Realtor_TaskSchema(ma.Schema):
+    class Meta:
+        fields = ('RealtorTaskId', 'RealtorId', 'TeamId', 'TaskId', 'NumericAnswer', 'CompletionDate', 'CompletionStatus')
+
+realtor_task_schema = Realtor_TaskSchema()
+realtor_tasks_schema = Realtor_TaskSchema(many=True)
 
 
+class Leaderboard(db.Model):
+    __tablename__ = 'leaderboard'
+    LeaderboardId = db.Column(db.Integer, primary_key=True)
+    RealtorId = db.Column(db.String(32), db.ForeignKey('user.id'))
+    TeamId = db.Column(db.Integer, db.ForeignKey('teams.TeamId'))
+    Points = db.Column(db.Integer)
+
+    realtor = db.relationship('User', backref=db.backref('leaderboard', lazy=True))
+    team = db.relationship('Teams', backref=db.backref('leaderboard', lazy=True))
+
+    def __init__(self, RealtorId, TeamId, Points):
+        self.RealtorId = RealtorId
+        self.TeamId = TeamId
+        self.Points = Points
+
+class LeaderboardSchema(ma.Schema):
+    class Meta:
+        fields = ('LeaderboardId', 'RealtorId', 'TeamId', 'Points')
+
+leaderboard_schema = LeaderboardSchema()
+leaderboards_schema = LeaderboardSchema(many=True)
 
 @app.route("/register", methods = ['POST'])
 def register_user():
@@ -179,8 +212,24 @@ def register_user():
     new_user = User(Name=Name, Email = Email, Password = hashed_password)
     db.session.add(new_user)
     db.session.commit()
-    
-    return user_schema.jsonify(new_user)
+
+    # Create a token for the new user
+    access_token = create_access_token(identity=new_user.id)
+
+    # Add the user to the team "Battle of the Generations"
+    team = Teams.query.filter_by(TeamName="Battle of the Generations").first()
+    if team is not None: 
+        realtor_team = Realtor_Teams(new_user.id, team.TeamId)
+        db.session.add(realtor_team)
+
+        # Add the user to the leaderboard for the "Battle of the Generations" team
+        leaderboard_entry = Leaderboard(RealtorId=new_user.id, TeamId=team.TeamId, Points=0)
+        db.session.add(leaderboard_entry)
+        db.session.commit()
+
+    return jsonify(user=user_schema.dump(new_user), access_token=access_token), 200
+
+
 
 
 @app.route("/login", methods = ['POST'])
@@ -193,7 +242,7 @@ def login_user():
     if user is None or not bcrypt.check_password_hash(user.Password, Password):
         return jsonify({"msg": "Bad username or password"}), 401
 
-    access_token = create_access_token(identity=Email)
+    access_token = create_access_token(identity=user.id)
     user_data = user_schema.dump(user)
 
     return jsonify(user=user_data, access_token=access_token), 200
@@ -230,9 +279,10 @@ def add_tasks():
 @app.route("/addTeam", methods = ['POST'])
 def add_teams():
     TeamName = request.json['TeamName']
+    Publisher = request.json['Publisher']
 
     
-    team = Teams(TeamName)
+    team = Teams(TeamName, Publisher)
     db.session.add(team)
     db.session.commit()
 
@@ -252,17 +302,14 @@ def add_to_team():
     realtor_team = Realtor_Teams(user.id, team.TeamId)
     db.session.add(realtor_team)
 
-    # Get all tasks associated with the team
-    team_tasks = Team_Task.query.filter_by(TeamId=team.TeamId).all()
-
-    # For each task, create a Realtor_Task entry
-    for team_task in team_tasks:
-        realtor_task = Realtor_Task(user.id, team_task.TaskId, NumericAnswer=None, CompletionDate=None, CompletionStatus=None, PointsEarned=0)
-        db.session.add(realtor_task)
+    # Add the user to the leaderboard with 0 points
+    leaderboard_entry = Leaderboard(user.id, team.TeamId, 0)
+    db.session.add(leaderboard_entry)
 
     db.session.commit()
 
     return realtor_teams_schema.jsonify(realtor_team)
+
 
 @app.route("/addTaskToTeam", methods=['POST'])
 def add_task_to_team():
@@ -277,18 +324,74 @@ def add_task_to_team():
 
     team_task = Team_Task(team.TeamId, task.TaskId)
     db.session.add(team_task)
-
-    # Get all realtors associated with the team
-    realtor_teams = Realtor_Teams.query.filter_by(TeamId=team.TeamId).all()
-
-    # For each realtor, create a Realtor_Task entry
-    for realtor_team in realtor_teams:
-        realtor_task = Realtor_Task(realtor_team.UserId, task.TaskId, NumericAnswer=None, CompletionDate=None, CompletionStatus=None, PointsEarned=0)
-        db.session.add(realtor_task)
-
     db.session.commit()
 
     return team_task_schema.jsonify(team_task)
+
+@app.route("/updateAnswer", methods=['POST'])
+@jwt_required()  # This ensures the route is protected
+def update_answer():
+    RealtorId = get_jwt_identity()  # This gets the identity of the current user
+    TaskId = request.json['TaskId']
+    NumericAnswer = request.json['NumericAnswer']
+    TeamId = request.json['TeamId']
+
+    task = Tasks.query.get(TaskId)
+    if task is None:
+        return jsonify({'error': 'Task not found'}), 404
+
+    realtor_task = Realtor_Task(RealtorId, TaskId, NumericAnswer, datetime.datetime.now(), 'true')
+    db.session.add(realtor_task)
+
+    leaderboard_entry = Leaderboard.query.filter_by(RealtorId=RealtorId, TeamId=TeamId).first()
+    if leaderboard_entry is None:
+        return jsonify({'error': 'Leaderboard entry not found'}), 404
+
+    leaderboard_entry.Points += task.TaskPoints
+
+    db.session.commit()
+
+    return realtor_task_schema.jsonify(realtor_task)
+
+@app.route("/user_teams/<user_id>", methods=['GET'])
+@jwt_required()
+def get_user_teams(user_id):
+
+    # Get the user's id
+    user_id = get_jwt_identity()
+    # Get the user's teams
+    user_teams = Realtor_Teams.query.filter_by(UserId=user_id).all()
+    # Get the team details
+    teams = [Teams.query.get(team.TeamId) for team in user_teams]
+
+    return jsonify(teams_schema.dump(teams))
+
+
+@app.route("/leaderboard", methods=['GET'])
+@jwt_required()
+def get_user_leaderboard():
+    
+    user_leaderboard_entries = Leaderboard.query.all()
+    serialized_data = leaderboards_schema.dump(user_leaderboard_entries)
+    return jsonify(serialized_data)
+
+@app.route("/user/<user_id>", methods=['GET'])
+@jwt_required()
+def get_user(user_id):
+    # Get the user's id from the JWT
+    user_id_from_token = get_jwt_identity()
+
+    # Check if the user_id from the JWT matches the user_id in the URL
+    if user_id_from_token != user_id:
+        return jsonify({"message": "Unauthorized"}), 401
+
+    # Get the user's data
+    user = User.query.get(user_id)
+
+    if user is None:
+        return jsonify({"message": "User not found"}), 404
+
+    return jsonify(user_schema.dump(user))
 
 
 if __name__ == "__main__":

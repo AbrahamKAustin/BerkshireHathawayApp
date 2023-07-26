@@ -13,14 +13,17 @@ import ProfilePage from './js/ProfilePage';
 import AnalyticsPage from './js/AnalyticsPage';
 import EditPage from './js/EditPage';
 import LeaderboardPage from './js/LeaderboardPage';
+import LoadingScreen from './js/LoadingScreen';
+import {LeaderboardProvider} from './js/LeaderboardContext'
+import {UserProvider} from './js/UserContext'
 
-
-import { AuthContext } from './js/AuthContext';  // import the context you created
+import { AuthContext } from './js/AuthContext';  
 
 const Stack = createStackNavigator();
 
 const App = () => {
   const [userToken, setUserToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Try to fetch the token from secure store when the app starts
@@ -28,47 +31,67 @@ const App = () => {
       .then(token => {
         if (token) {
           const decodedToken = jwtDecode(token);
+          //console.log('Decoded token on load:', decodedToken); // Add this line
           const currentTime = Date.now() / 1000;
 
           // Check if the token has expired
           if (decodedToken.exp < currentTime) {
-            authContext.signOut();
+            setUserToken(null); // directly set the userToken to null
           } else {
             setUserToken(decodedToken);
           }
         }
+        setIsLoading(false);
       });
   }, []);
 
   const authContext = {
+    userToken,
     signIn: async (token) => {
-      const decodedToken = jwtDecode(token)
-      setUserToken(decodedToken);
       await SecureStore.setItemAsync('jwt', token);
+      const decodedToken = jwtDecode(token)    
+      //console.log('Decoded token:', decodedToken); // Add this line
+
+      setUserToken(decodedToken);
     },
     signOut: async () => {
       setUserToken(null);
       await SecureStore.deleteItemAsync('jwt');
     },
+    isLoading,
   };
+
+  if (isLoading) {
+    return <LoadingScreen />; 
+  }
 
   return (
     <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="LoginSignup" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="LoginSignup" component={LoginSignup} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Signup" component={Signup} />
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="TasksPage" component={TasksPage} />
-          <Stack.Screen name="ProfilePage" component={ProfilePage} />
-          <Stack.Screen name="AnalyticsPage" component={AnalyticsPage} />
-          <Stack.Screen name="EditPage" component={EditPage} />
-          <Stack.Screen name="LeaderboardPage" component={LeaderboardPage} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      {userToken ? (
+          <LeaderboardProvider>
+              <UserProvider>
+                <NavigationContainer>
+                  <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Home" component={Home} />
+                    <Stack.Screen name="TasksPage" component={TasksPage} />
+                    <Stack.Screen name="ProfilePage" component={ProfilePage} />
+                    <Stack.Screen name="AnalyticsPage" component={AnalyticsPage} />
+                    <Stack.Screen name="EditPage" component={EditPage} />
+                    <Stack.Screen name="LeaderboardPage" component={LeaderboardPage} />
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </UserProvider>
+          </LeaderboardProvider>
+      ) : (
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="LoginSignup" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="LoginSignup" component={LoginSignup} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Signup" component={Signup} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      )}
     </AuthContext.Provider>
   );
-};
-
+}
 export default App;

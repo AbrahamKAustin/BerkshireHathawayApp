@@ -15,7 +15,8 @@ import TaskModal from './TaskModal';
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
-const TasksPage = ({ navigation }) => {
+const TasksPage = ({ route, navigation }) => {
+  const { post } = route.params;
   const [group, setGroup] = useState({
     name: "Battle of the Generations",
     tasks: [

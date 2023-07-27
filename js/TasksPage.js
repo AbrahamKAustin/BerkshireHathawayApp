@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -11,149 +11,71 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import TaskModal from './TaskModal';
+import * as SecureStore from 'expo-secure-store';
+import { AuthContext } from "./AuthContext";
 
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const TasksPage = ({ route, navigation }) => {
   const { post } = route.params;
-  const [group, setGroup] = useState({
-    name: "Battle of the Generations",
-    tasks: [
-      { 
-        id: 1, 
-        task: 'Meaningful Connections', 
-        isCompleted: false,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
+  const authContext = useContext(AuthContext);
+  const userToken = authContext.userToken;
+  const userId = userToken ? userToken.sub : null;
 
-        ]
-      },
-      { 
-        id: 2, 
-        task: 'Buyer Contract', 
-        isCompleted: true,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "What is the contract's value?", answer: "" },
-          { text: "What are the key terms?", answer: "" },
-        ]
-      },
-      { 
-        id: 3, 
-        task: 'Social Posts', 
-        isCompleted: true,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "What was the engagement on these posts?", answer: "" },
-          { text: "What can be improved for future posts?", answer: "" },
-        ]
-      },
-      { 
-        id: 4, 
-        task: 'Hours Prospecting', 
-        isCompleted: false,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "How many hours were spent prospecting?", answer: "" },
-          { text: "What was the result?", answer: "" },
-        ]
-      },
-      { 
-        id: 5, 
-        task: 'Direct Mail', 
-        isCompleted: false,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "How many direct mail pieces were sent?", answer: "" },
-          { text: "What was the response rate?", answer: "" },
-        ]
-      },
-      { 
-        id: 6, 
-        task: 'Buyer Consultations', 
-        isCompleted: true,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "How many buyer consultations were held?", answer: "" },
-          { text: "What were the outcomes?", answer: "" },
-        ]
-      },
-      { 
-        id: 7, 
-        task: 'Prospecting Types', 
-        isCompleted: false,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "What types of prospecting were done?", answer: "" },
-          { text: "Which type was most effective?", answer: "" },
-        ]
-      },
-      { 
-        id: 8, 
-        task: 'Leads', 
-        isCompleted: false,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "How many leads were generated?", answer: "" },
-          { text: "What methods were most successful?", answer: "" },
-        ]
-      },
-      { 
-        id: 9, 
-        task: "Seller's Appointments", 
-        isCompleted: true,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "How many seller's appointments were held?", answer: "" },
-          { text: "What were the results of these appointments?", answer: "" },
-        ]
-      },
-      { 
-        id: 10, 
-        task: 'Listing Appointments', 
-        isCompleted: false,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "How many listing appointments were held?", answer: "" },
-          { text: "How many resulted in a listing agreement?", answer: "" },
-        ]
-      },
-      { 
-        id: 11, 
-        task: 'Buyer/Tenant Homes', 
-        isCompleted: true,
-        description: 'How many successful meaningful connections did you make today', 
-        points: 25,
-        questions: [
-          { text: "How many homes were found for buyers/tenants?", answer: "" },
-          { text: "What were the key factors in finding these homes?", answer: "" },
-        ]
-      },
-      { 
-        id: 12, 
-        task: 'Open House Attendees', 
-        isCompleted: false,
-        description: 'How many successful meaningful connections did you make today',
-        points: 25,
-        questions: [
-          { text: "How many people attended the open house?", answer: "" },
-          { text: "How can attendance be increased?", answer: "" },
-        ]
-      },
-    ],
-  });
+  const [tasks, setTasks] = useState([]);  // initialize as empty array
+
+  useEffect(() => {
+      if (post.TeamId) {
+          SecureStore.getItemAsync('jwt').then(token => {
+              fetch(`https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/team_tasks/${post.TeamId}`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                  }
+              })
+              .then(response => response.json())
+              .then(data => {
+                setTasks(data);                  
+              })
+              .catch((error) => {
+                  console.error('Fetch error:', error);
+              });
+          });
+      } else {
+        setTasks([]);
+      }
+  }, [post.TeamId]);
+  
+  const [taskCompletions, setTaskCompletions] = useState([]);  
+
+  useEffect(() => {
+      if (post.TeamId && userId) { 
+          SecureStore.getItemAsync('jwt').then(token => {
+              fetch(`https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/getTaskCompletion/${post.TeamId}/${userId}`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                  }
+              })
+              .then(response => response.json())
+              .then(data => {
+                setTaskCompletions(data);                  
+              })
+              .catch((error) => {
+                  console.error('Fetch error:', error);
+              });
+          });
+      } else {
+        setTaskCompletions([]);
+      }
+  }, [post.TeamId, userId]); 
+  
+
     const [selectedTask, setSelectedTask] = useState(null);
+    const selectedTaskData = selectedTask ? tasks.find(task => task.TaskId === selectedTask.TaskId) : null;
     const completeTask = (taskId) => {
       setGroup((prevState) => {
         const newTasks = prevState.tasks.map((task) =>
@@ -205,16 +127,26 @@ const TasksPage = ({ route, navigation }) => {
         );
       };
       
-    let incompleteTasksCount = group.tasks.filter(task => !task.isCompleted).length;
   
-    let filteredTasks = [];
-    for(let i = 0; i < group.tasks.length; i++) {
-        if(filter === 'all') {
-        filteredTasks.push(group.tasks[i]);
-        } else if(filter === 'incomplete' && !group.tasks[i].isCompleted) {
-        filteredTasks.push(group.tasks[i]);
-        }
+const allTasks = tasks.map(task => {
+  const taskCompletion = taskCompletions.find(tc => tc.TaskId === task.TaskId);
+  
+  const isCompleted = taskCompletion ? taskCompletion.CompletionStatus === 1 : false;
+  
+  // Return a new object with the task data and the added isCompleted property
+  return { ...task, isCompleted };
+});
+console.log('allTasks', allTasks);
+let incompleteTasksCount = allTasks.filter(task => !task.isCompleted).length;
+let filteredTasks = [];
+for(let i = 0; i < allTasks.length; i++) {
+    if(filter === 'all') {
+    filteredTasks.push(allTasks[i]);
+    } else if(filter === 'incomplete' && !allTasks[i].isCompleted) {
+    filteredTasks.push(allTasks[i]);
     }
+}
+
 
   return (
     <View style = {styles.container}>
@@ -225,7 +157,7 @@ const TasksPage = ({ route, navigation }) => {
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
                   <Text style={styles.titleText}>TASKS</Text>
-                  <Text style={styles.groupText}>{group.name}</Text>
+                  <Text style={styles.groupText}>{post.TeamName}</Text>
                 </View>
             </View>
 
@@ -240,7 +172,7 @@ const TasksPage = ({ route, navigation }) => {
                 >
                     <Text style={allTasksActive ? styles.filterTextActive : styles.filterText}>ALL</Text>
                     <View style = {allTasksActive ? styles.filterNumberActive : styles.filterNumber} >
-                        <Text style={allTasksActive ? styles.filterNumberTextActive : styles.filterNumberText}>{group.tasks.length}</Text>
+                        <Text style={allTasksActive ? styles.filterNumberTextActive : styles.filterNumberText}>{allTasks.length}</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity 
@@ -262,12 +194,12 @@ const TasksPage = ({ route, navigation }) => {
             <View style={styles.highPriorityTasksContainer}>
                 <ScrollView horizontal = {true} showsHorizontalScrollIndicator = {false}>
                     {filteredTasks.map((task) => {
-                        if (task.id < 6) {
+                        if (task.TaskId < 6) {
                             return (
-                                <View style={[styles.highPriorityTask, {backgroundColor: highPriorityBackgroundColors[task.id % 5]}]}>
-                                    <Image source = {highPriorityImages[task.id % 5]} style = {styles.image}/>
+                                <View style={[styles.highPriorityTask, {backgroundColor: highPriorityBackgroundColors[task.TaskId % 5]}]}>
+                                    <Image source = {highPriorityImages[task.TaskId % 5]} style = {styles.image}/>
                                     <View style= {styles.textContainer}>
-                                        <Text style ={styles.highPriorityText}>{task.task}</Text>
+                                        <Text style ={styles.highPriorityText}>{task.TaskName}</Text>
                                     </View> 
                                     <TouchableOpacity style = {styles.highPriorityButton} onPress={() => setSelectedTask(task)}>
                                         <Text style ={styles.highPriorityButtonText}>Edit task</Text>
@@ -283,12 +215,12 @@ const TasksPage = ({ route, navigation }) => {
             <Text style = {styles.normalPriorityTitleText}>Tasks</Text>
             <View style={styles.normalTasksContainer}>
             {filteredTasks.map((task) => {
-                if (task.id >= 6) {
+                if (task.TaskId >= 6) {
 
                     return (
                         <View style={styles.normalTask}>
                             <View style={styles.taskLeftContainer}>
-                                <Text style ={styles.normalText}>{task.task}</Text>
+                                <Text style ={styles.normalText}>{task.TaskName}</Text>
                                 <TouchableOpacity style = {styles.normalButton} onPress={() => setSelectedTask(task)}>
                                     <Text style ={styles.normalButtonText}>Edit task</Text>
                                     <Icon name="create" size={deviceHeight / 40} color='white' />
@@ -296,7 +228,7 @@ const TasksPage = ({ route, navigation }) => {
                             </View>
         
                             <View style={styles.taskRightContainer}>
-                                <Icon name={icons[task.id % icons.length]} size={deviceHeight / 15} color='#670038' />
+                                <Icon name={icons[task.TaskId % icons.length]} size={deviceHeight / 15} color='#670038' />
                             </View>
         
                         </View>
@@ -309,7 +241,7 @@ const TasksPage = ({ route, navigation }) => {
         {selectedTask && 
           <TaskModal 
             isVisible={!!selectedTask} 
-            task={selectedTask} 
+            task={selectedTaskData} 
             onClose={() => setSelectedTask(null)}
             onCompleteTask={completeTask} 
           />

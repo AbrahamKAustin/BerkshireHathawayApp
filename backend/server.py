@@ -59,8 +59,7 @@ class Tasks(db.Model):
     Publisher = db.Column(db.String(50))
     Questions = db.relationship('Questions', backref='task', lazy=True)
 
-
-    def __init__(self, TaskName, TaskPoints,  TextDescription, Publisher):
+    def __init__(self, TaskName, TaskPoints, TextDescription, Publisher):
         self.TaskName = TaskName
         self.TaskPoints = TaskPoints
         self.TextDescription = TextDescription
@@ -68,10 +67,11 @@ class Tasks(db.Model):
 
 class TaskSchema(ma.Schema):
     class Meta:
-        fields = ('TaskId', 'TaskName', 'TaskPoints', 'TextDescription', 'DatePublished', 'Publisher')
+        fields = ('TaskId', 'TaskName', 'TaskPoints', 'TextDescription', 'DatePublished', 'Publisher')  # add 'CompletionStatus'
 
 task_schema = TaskSchema()
 tasks_schema = TaskSchema(many=True)
+
 
 class Questions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -151,27 +151,22 @@ class Realtor_Task(db.Model):
     __tablename__ = 'realtor_task'
     RealtorTaskId = db.Column(db.Integer, primary_key=True)
     RealtorId = db.Column(db.String(32), db.ForeignKey('user.id'))
-    TeamId = db.Column(db.Integer, db.ForeignKey('teams.TeamId'))
     TaskId = db.Column(db.Integer, db.ForeignKey('tasks.TaskId'))
     NumericAnswer = db.Column(db.Integer)
     CompletionDate = db.Column(db.DateTime)
-    CompletionStatus = db.Column(db.String(50))
 
-    team = db.relationship('Teams', backref = db.backref('realtor_task', lazy = True))
     realtor = db.relationship('User', backref=db.backref('realtor_task', lazy=True))
     task = db.relationship('Tasks', backref=db.backref('realtor_task', lazy=True))
 
-    def __init__(self, RealtorId, TaskId, NumericAnswer, CompletionDate, CompletionStatus, TeamId):
-        self.TeamId = TeamId
+    def __init__(self, RealtorId, TaskId, NumericAnswer, CompletionDate):
         self.RealtorId = RealtorId
         self.TaskId = TaskId
         self.NumericAnswer = NumericAnswer
         self.CompletionDate = CompletionDate
-        self.CompletionStatus = CompletionStatus
 
 class Realtor_TaskSchema(ma.Schema):
     class Meta:
-        fields = ('RealtorTaskId', 'RealtorId', 'TeamId', 'TaskId', 'NumericAnswer', 'CompletionDate', 'CompletionStatus')
+        fields = ('RealtorTaskId', 'RealtorId', 'TaskId', 'NumericAnswer', 'CompletionDate')
 
 realtor_task_schema = Realtor_TaskSchema()
 realtor_tasks_schema = Realtor_TaskSchema(many=True)
@@ -198,6 +193,28 @@ class LeaderboardSchema(ma.Schema):
 
 leaderboard_schema = LeaderboardSchema()
 leaderboards_schema = LeaderboardSchema(many=True)
+
+class TaskCompletion(db.Model): 
+    __tablename__ = 'task_completion'
+    CompletionId = db.Column(db.Integer, primary_key=True)
+    UserId = db.Column(db.String(32), db.ForeignKey('user.id'))
+    TaskId = db.Column(db.Integer, db.ForeignKey('tasks.TaskId'))
+    CompletionStatus = db.Column(db.Boolean, default=False)
+
+    user = db.relationship('User', backref=db.backref('task_completion', lazy=True))
+    task = db.relationship('Tasks', backref=db.backref('task_completion', lazy=True))
+
+    def __init__(self, UserId, TaskId, CompletionStatus=False):
+        self.UserId = UserId
+        self.TaskId = TaskId
+        self.CompletionStatus = CompletionStatus
+
+class TaskCompletionSchema(ma.Schema):
+    class Meta:
+        fields = ('CompletionId', 'UserId', 'TaskId', 'CompletionStatus')
+
+task_completion_schema = TaskCompletionSchema()
+task_completions_schema = TaskCompletionSchema(many=True)
 
 @app.route("/register", methods = ['POST'])
 def register_user():
@@ -299,6 +316,7 @@ def add_to_team():
     if user is None or team is None:
         return jsonify({'error': 'User or team not found'}), 404
 
+    # Associate the user with the team
     realtor_team = Realtor_Teams(user.id, team.TeamId)
     db.session.add(realtor_team)
 
@@ -306,9 +324,18 @@ def add_to_team():
     leaderboard_entry = Leaderboard(user.id, team.TeamId, 0)
     db.session.add(leaderboard_entry)
 
+    # Get all tasks associated with the team
+    team_tasks = Team_Task.query.filter_by(TeamId=team.TeamId).all()
+
+    # Add a new row in TaskCompletion for each task in the team
+    for task in team_tasks:
+        task_completion = TaskCompletion(user.id, task.TaskId, False)
+        db.session.add(task_completion)
+
     db.session.commit()
 
     return realtor_teams_schema.jsonify(realtor_team)
+
 
 
 @app.route("/addTaskToTeam", methods=['POST'])
@@ -327,31 +354,6 @@ def add_task_to_team():
     db.session.commit()
 
     return team_task_schema.jsonify(team_task)
-
-@app.route("/updateAnswer", methods=['POST'])
-@jwt_required()  # This ensures the route is protected
-def update_answer():
-    RealtorId = get_jwt_identity()  # This gets the identity of the current user
-    TaskId = request.json['TaskId']
-    NumericAnswer = request.json['NumericAnswer']
-    TeamId = request.json['TeamId']
-
-    task = Tasks.query.get(TaskId)
-    if task is None:
-        return jsonify({'error': 'Task not found'}), 404
-
-    realtor_task = Realtor_Task(RealtorId, TaskId, NumericAnswer, datetime.datetime.now(), 'true')
-    db.session.add(realtor_task)
-
-    leaderboard_entry = Leaderboard.query.filter_by(RealtorId=RealtorId, TeamId=TeamId).first()
-    if leaderboard_entry is None:
-        return jsonify({'error': 'Leaderboard entry not found'}), 404
-
-    leaderboard_entry.Points += task.TaskPoints
-
-    db.session.commit()
-
-    return realtor_task_schema.jsonify(realtor_task)
 
 @app.route("/user_teams/<user_id>", methods=['GET'])
 @jwt_required()
@@ -392,6 +394,47 @@ def get_user(user_id):
         return jsonify({"message": "User not found"}), 404
 
     return jsonify(user_schema.dump(user))
+
+@app.route("/team_tasks/<team_id>", methods=['GET'])
+@jwt_required()
+def get_team_tasks(team_id):
+    # Query the Team_Task table for entries with the given TeamId
+    team_tasks = Team_Task.query.filter_by(TeamId=team_id).all()
+
+    # If no entries are found, return an error message
+    if not team_tasks:
+        return jsonify({"message": "No tasks found for this team"}), 404
+
+    # Get the tasks details
+    tasks = [Tasks.query.get(task.TaskId) for task in team_tasks]
+
+    # Construct a new response object that only contains TaskId and TaskName
+    tasks_response = [{"TaskId": task.TaskId, "TaskName": task.TaskName} for task in tasks]
+
+    # Return the tasks as JSON
+    return jsonify(tasks_response)
+
+@app.route("/getTaskCompletion/<team_id>/<user_id>", methods=['GET'])
+@jwt_required()
+def get_task_completion(user_id, team_id):
+    # Get the tasks of the team
+    team_tasks = Team_Task.query.filter_by(TeamId=team_id).all()
+
+    # Prepare the tasks id list
+    task_ids = [task.TaskId for task in team_tasks]
+
+    # Query the TaskCompletion table for entries with the given UserId and TaskId
+    user_tasks_completion = TaskCompletion.query.filter(TaskCompletion.UserId == user_id, TaskCompletion.TaskId.in_(task_ids)).all()
+
+    # If no entries are found, return an error message
+    if not user_tasks_completion:
+        return jsonify({"message": "No tasks completion entries found for this user"}), 404
+
+    # Prepare the result
+    result = [{'TaskId': task_completion.TaskId, 'UserId': task_completion.UserId, 'CompletionStatus': task_completion.CompletionStatus} for task_completion in user_tasks_completion]
+
+    # Return the tasks completion entries as JSON
+    return jsonify(result)
 
 
 if __name__ == "__main__":

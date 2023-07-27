@@ -20,7 +20,6 @@ import * as SecureStore from 'expo-secure-store';
 import { LeaderboardContext } from './LeaderboardContext';
 
 
-
 const Home = ({ navigation }) => {
   const [post, setPost] = useState([]);
   const authContext = useContext(AuthContext);
@@ -66,6 +65,7 @@ const Home = ({ navigation }) => {
   };
 
   const handleContinue = (post) => {
+
     navigation.navigate('TasksPage', {post});
   };
 
@@ -125,7 +125,7 @@ const Home = ({ navigation }) => {
         <Text style={styles.rectangleText}>{post[post.length - 1].TeamName}</Text>
         <TouchableOpacity
           style={styles.continueButton}
-          onPress={handleContinue}
+          onPress={() => handleContinue(post)}
         >
           <Text style={styles.continueText}>Continue</Text>
           <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />

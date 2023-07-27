@@ -16,7 +16,6 @@ import LeaderboardPage from './js/LeaderboardPage';
 import LoadingScreen from './js/LoadingScreen';
 import {LeaderboardProvider} from './js/LeaderboardContext'
 import {UserProvider} from './js/UserContext'
-
 import { AuthContext } from './js/AuthContext';  
 
 const Stack = createStackNavigator();
@@ -68,20 +67,20 @@ const App = () => {
   return (
     <AuthContext.Provider value={authContext}>
       {userToken ? (
-          <LeaderboardProvider>
-              <UserProvider>
-                <NavigationContainer>
-                  <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="Home" component={Home} />
-                    <Stack.Screen name="TasksPage" component={TasksPage} />
-                    <Stack.Screen name="ProfilePage" component={ProfilePage} />
-                    <Stack.Screen name="AnalyticsPage" component={AnalyticsPage} />
-                    <Stack.Screen name="EditPage" component={EditPage} />
-                    <Stack.Screen name="LeaderboardPage" component={LeaderboardPage} />
-                  </Stack.Navigator>
-                </NavigationContainer>
-              </UserProvider>
-          </LeaderboardProvider>
+        <LeaderboardProvider>
+          <UserProvider>
+              <NavigationContainer>
+                <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="Home" component={Home} />
+                  <Stack.Screen name="TasksPage" component={TasksPage} />
+                  <Stack.Screen name="ProfilePage" component={ProfilePage} />
+                  <Stack.Screen name="AnalyticsPage" component={AnalyticsPage} />
+                  <Stack.Screen name="EditPage" component={EditPage} />
+                  <Stack.Screen name="LeaderboardPage" component={LeaderboardPage} />
+                </Stack.Navigator>
+              </NavigationContainer>
+          </UserProvider>
+        </LeaderboardProvider>
       ) : (
         <NavigationContainer>
           <Stack.Navigator initialRouteName="LoginSignup" screenOptions={{ headerShown: false }}>

@@ -25,7 +25,6 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Try to fetch the token from secure store when the app starts
     SecureStore.getItemAsync('jwt')
       .then(token => {
         if (token) {
@@ -33,7 +32,6 @@ const App = () => {
           //console.log('Decoded token on load:', decodedToken); // Add this line
           const currentTime = Date.now() / 1000;
 
-          // Check if the token has expired
           if (decodedToken.exp < currentTime) {
             setUserToken(null); // directly set the userToken to null
           } else {

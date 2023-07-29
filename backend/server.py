@@ -35,7 +35,6 @@ class User(db.Model):
     Email = db.Column(db.String(50), unique =True)
     Password = db.Column(db.Text(), nullable = False)
     Role = db.Column(db.Integer, nullable = False, default = 1)
-    TotalPoints = db.Column(db.Integer, default = 0)
 
     def __init__(self, Name, Email,  Password):
         self.Name = Name
@@ -45,7 +44,7 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'Name', 'Email', 'Role', 'TotalPoints')
+        fields = ('id', 'Name', 'Email', 'Role')
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -146,30 +145,33 @@ class Team_TaskSchema(ma.Schema):
 
 team_task_schema = Team_TaskSchema()
 team_tasks_schema = Team_TaskSchema(many=True)
-
 class Realtor_Task(db.Model):
     __tablename__ = 'realtor_task'
     RealtorTaskId = db.Column(db.Integer, primary_key=True)
     RealtorId = db.Column(db.String(32), db.ForeignKey('user.id'))
     TaskId = db.Column(db.Integer, db.ForeignKey('tasks.TaskId'))
+    QuestionId = db.Column(db.Integer, db.ForeignKey('questions.id')) 
     NumericAnswer = db.Column(db.Integer)
-    CompletionDate = db.Column(db.DateTime)
+    DatePublished = db.Column(db.DateTime, default = datetime.datetime.now)
 
     realtor = db.relationship('User', backref=db.backref('realtor_task', lazy=True))
     task = db.relationship('Tasks', backref=db.backref('realtor_task', lazy=True))
+    question = db.relationship('Questions', backref=db.backref('realtor_task', lazy=True)) 
 
-    def __init__(self, RealtorId, TaskId, NumericAnswer, CompletionDate):
+    def __init__(self, RealtorId, TaskId, NumericAnswer, QuestionId):
         self.RealtorId = RealtorId
         self.TaskId = TaskId
         self.NumericAnswer = NumericAnswer
-        self.CompletionDate = CompletionDate
+        self.QuestionId = QuestionId
+
 
 class Realtor_TaskSchema(ma.Schema):
     class Meta:
-        fields = ('RealtorTaskId', 'RealtorId', 'TaskId', 'NumericAnswer', 'CompletionDate')
+        fields = ('RealtorTaskId', 'RealtorId', 'TaskId', 'NumericAnswer', 'QuestionId')
 
 realtor_task_schema = Realtor_TaskSchema()
 realtor_tasks_schema = Realtor_TaskSchema(many=True)
+
 
 
 class Leaderboard(db.Model):
@@ -320,14 +322,11 @@ def add_to_team():
     realtor_team = Realtor_Teams(user.id, team.TeamId)
     db.session.add(realtor_team)
 
-    # Add the user to the leaderboard with 0 points
     leaderboard_entry = Leaderboard(user.id, team.TeamId, 0)
     db.session.add(leaderboard_entry)
 
-    # Get all tasks associated with the team
     team_tasks = Team_Task.query.filter_by(TeamId=team.TeamId).all()
 
-    # Add a new row in TaskCompletion for each task in the team
     for task in team_tasks:
         task_completion = TaskCompletion(user.id, task.TaskId, False)
         db.session.add(task_completion)
@@ -383,7 +382,6 @@ def get_user(user_id):
     # Get the user's id from the JWT
     user_id_from_token = get_jwt_identity()
 
-    # Check if the user_id from the JWT matches the user_id in the URL
     if user_id_from_token != user_id:
         return jsonify({"message": "Unauthorized"}), 401
 
@@ -401,15 +399,13 @@ def get_team_tasks(team_id):
     # Query the Team_Task table for entries with the given TeamId
     team_tasks = Team_Task.query.filter_by(TeamId=team_id).all()
 
-    # If no entries are found, return an error message
     if not team_tasks:
         return jsonify({"message": "No tasks found for this team"}), 404
 
     # Get the tasks details
     tasks = [Tasks.query.get(task.TaskId) for task in team_tasks]
 
-    # Construct a new response object that only contains TaskId and TaskName
-    tasks_response = [{"TaskId": task.TaskId, "TaskName": task.TaskName} for task in tasks]
+    tasks_response = [{column.name: getattr(task, column.name) for column in task.__table__.columns} for task in tasks]
 
     # Return the tasks as JSON
     return jsonify(tasks_response)
@@ -420,21 +416,63 @@ def get_task_completion(user_id, team_id):
     # Get the tasks of the team
     team_tasks = Team_Task.query.filter_by(TeamId=team_id).all()
 
-    # Prepare the tasks id list
     task_ids = [task.TaskId for task in team_tasks]
 
     # Query the TaskCompletion table for entries with the given UserId and TaskId
     user_tasks_completion = TaskCompletion.query.filter(TaskCompletion.UserId == user_id, TaskCompletion.TaskId.in_(task_ids)).all()
 
-    # If no entries are found, return an error message
     if not user_tasks_completion:
         return jsonify({"message": "No tasks completion entries found for this user"}), 404
 
-    # Prepare the result
     result = [{'TaskId': task_completion.TaskId, 'UserId': task_completion.UserId, 'CompletionStatus': task_completion.CompletionStatus} for task_completion in user_tasks_completion]
 
-    # Return the tasks completion entries as JSON
     return jsonify(result)
+
+@app.route("/getQuestions/<task_id>", methods=['GET'])
+@jwt_required()
+def get_Questions(task_id):
+    # Get the questions for the specified task
+    questions = Questions.query.filter_by(task_id=task_id).all()
+
+    if not questions:
+        return jsonify([]), 200
+
+
+    result = questions_schema.dump(questions)
+    return jsonify(result)
+
+@app.route("/createRealtorTask/<userId>", methods=['POST'])
+@jwt_required()
+def create_realtor_task(userId):
+    print(request.json)
+    realtor_id = userId
+    task_id = request.json['TaskId']
+    numeric_answer = request.json['NumericAnswer']
+    question_id = request.json.get('QuestionId')  
+
+    new_realtor_task = Realtor_Task(realtor_id, task_id, numeric_answer, question_id)
+
+    db.session.add(new_realtor_task)
+
+    # Find the corresponding task_completion record and update its CompletionStatus
+    task_completion = TaskCompletion.query.filter_by(TaskId=task_id).first()
+    if task_completion is not None:
+        task_completion.CompletionStatus = True
+    else:
+        return jsonify({"message": "No matching task_completion record found for the provided TaskId"}), 400
+
+    # Update points in the Leaderboard model
+    task_points = Tasks.query.get(task_id).TaskPoints  
+    team_id = request.json['TeamId']  
+    leaderboard_record = Leaderboard.query.filter_by(RealtorId=userId, TeamId=team_id).first()
+    if leaderboard_record is not None:
+        leaderboard_record.Points += task_points  
+    else:
+        return jsonify({"message": "No matching Leaderboard record found for the provided RealtorId and TeamId"}), 400
+
+    db.session.commit()
+
+    return realtor_task_schema.jsonify(new_realtor_task)
 
 
 if __name__ == "__main__":

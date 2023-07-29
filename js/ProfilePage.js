@@ -35,7 +35,7 @@ const ProfilePage = ({ navigation }) => {
   console.log('userData', userData);
 
   if (isLoading) {
-    return <LoadingScreen />; // Render a loading screen if userData is not available
+    return <LoadingScreen />; 
   }
   useEffect(() => {
     console.log('useEffect component rendering');
@@ -59,7 +59,6 @@ const ProfilePage = ({ navigation }) => {
     }, [userId]);
     console.log('post', post);
 
-// First, add a state variable for the old ranks
 const [oldRanks, setOldRanks] = useState({});
 const [teamsWithCHG, setTeamsWithCHG] = useState([]); // to store teams with their change in rank
 

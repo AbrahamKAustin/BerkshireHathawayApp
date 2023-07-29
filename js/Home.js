@@ -88,51 +88,51 @@ const Home = ({ navigation }) => {
       </View>
       
       {post && post.map((post, index) => (
+        <>
+          <TouchableOpacity style={styles.groupContainer} onPress={() => handleContinue(post)}>
+            <View style={styles.smallerCirclesContainer}>
+              <View style={styles.smallerCircle} />
+            </View>
+            <View style={styles.biggerCirclesContainer}>
+              <View style={styles.biggerCircle} />
+            </View>
+            <View style={styles.topGroupContainer}>
+              <Image style={styles.avatar} source={avatar} />
+              <View justifyContent={"center"} padding="2%">
+                <Text style={styles.name}>{post.Publisher}</Text>
+                <Text style={styles.greyName}>{"Posted by"}</Text>
+              </View>
+            </View>
+            <View style={styles.midGroupContainer}>
+              <View style={styles.textContainer}>
+                <Text style={styles.groupName}>
+                  {post.TeamName}
+                </Text>
+              </View>
+              <View justifyContent={"center"}>
+                <Text style={styles.name}>
+                  {`${(new Date(post.DatePublished).getMonth() + 1).toString().padStart(2, '0')}/${new Date(post.DatePublished).getFullYear().toString().substr(-2)}`}
+                </Text>              
+                <Text style={styles.greyName}>{"Start Date"}</Text>
+              </View>
+            </View>
+            <Image style={styles.postImage} source={banner} />
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.groupContainer} onPress={() => handleContinue(post)}>
-          <View style={styles.smallerCirclesContainer}>
-            <View style={styles.smallerCircle} />
+          <View style={styles.smallRectangle}>
+            <Text style={styles.rectangleText}>{post.TeamName}</Text>
+            <TouchableOpacity
+              style={styles.continueButton}
+              onPress={() => handleContinue(post)}
+            >
+              <Text style={styles.continueText}>Continue</Text>
+              <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />
+            </TouchableOpacity>
           </View>
-          <View style={styles.biggerCirclesContainer}>
-            <View style={styles.biggerCircle} />
-          </View>
-          <View style={styles.topGroupContainer}>
-            <Image style={styles.avatar} source={avatar} />
-            <View justifyContent={"center"} padding="2%">
-              <Text style={styles.name}>{post.Publisher}</Text>
-              <Text style={styles.greyName}>{"Posted by"}</Text>
-            </View>
-          </View>
-          <View style={styles.midGroupContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.groupName} >
-                {post.TeamName}
-              </Text>
-            </View>
-            <View justifyContent={"center"}>
-              <Text style={styles.name}>
-                {`${(new Date(post.DatePublished).getMonth() + 1).toString().padStart(2, '0')}/${new Date(post.DatePublished).getFullYear().toString().substr(-2)}`}
-              </Text>              
-              <Text style={styles.greyName}>{"Start Date"}</Text>
-            </View>
-          </View>
-          <Image style={styles.postImage} source={banner} />
-        </TouchableOpacity>
-        ))}
-      {post.length > 0 && (
+        </>
+      ))}
 
-      <View style={styles.smallRectangle}>
-        <Text style={styles.rectangleText}>{post[post.length - 1].TeamName}</Text>
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={() => handleContinue(post)}
-        >
-          <Text style={styles.continueText}>Continue</Text>
-          <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />
-        </TouchableOpacity>
-      </View>
-      )}
-      <FloatingNavBar navigation={navigation} />
+        <FloatingNavBar navigation={navigation} />
       </View>
   );
 };

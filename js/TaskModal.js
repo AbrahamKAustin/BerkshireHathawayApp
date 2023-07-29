@@ -1,12 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Button, TextInput, Modal, StyleSheet, Dimensions, TouchableOpacity,
 ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import lgoodchild from "../assets/lgoodchild.png";
+import * as SecureStore from 'expo-secure-store';
+import { AuthContext } from "./AuthContext";
 
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
-const TaskModal = ({ isVisible, task, onClose, onCompleteTask }) => {
+const TaskModal = ({ isVisible, task, onClose, post }) => {
+    const authContext = useContext(AuthContext);
+    const userToken = authContext.userToken;
+    const userId = userToken ? userToken.sub : null;
+    const [questions, setQuestions] = useState([]); 
+
+    useEffect(() => {
+        if (task) { 
+            SecureStore.getItemAsync('jwt').then(token => {
+                fetch(`https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/getQuestions/${task.TaskId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    setQuestions(data);
+                })
+                .catch((error) => {
+                    console.error('Fetch error:', error);
+                });
+            });
+        } else {
+            setQuestions([]);
+        }
+    }, [task]);
+    console.log('Questions', questions)
+
+    console.log('task', task);
   // Assume each task may have multiple questions
   const [answers, setAnswers] = useState(
     task.questions ? task.questions.map(q => q.answer) : []
@@ -21,10 +53,64 @@ const TaskModal = ({ isVisible, task, onClose, onCompleteTask }) => {
   };
 
   const handleSubmit = () => {
-    console.log(`Answers for task ${task.id}: `, answers);
-    onCompleteTask(task.id);
-    onClose();
-  };
+    SecureStore.getItemAsync('jwt').then(token => {
+        let fetchPromises = [];
+      if (questions.length === 0) {
+        const fetchPromise = fetch(`https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/createRealtorTask/${userId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            TaskId: task.TaskId, 
+            NumericAnswer: answers[0] ? answers[0] : 0, 
+            QuestionId: null,
+            TeamId: post.TeamId,
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error('Fetch error:', error);
+        });
+        fetchPromises.push(fetchPromise);
+      } else {
+        answers.forEach((answer, i) => {
+          const fetchPromise = fetch(`https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/createRealtorTask/${userId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              TaskId: task.TaskId, 
+              NumericAnswer: answer, 
+              QuestionId: questions[i].id,
+              TeamId: post.TeamId,
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+          .catch((error) => {
+            console.error('Fetch error:', error);
+          });
+  
+          fetchPromises.push(fetchPromise)
+        });
+      }
+      Promise.all(fetchPromises).then(() => {
+        console.log(`Answers for task ${task.TaskId}: `, answers);
+        onClose();
+      });
+    });
+  }
+  
+
 
   return (
     <Modal visible={isVisible} animationType="slide">
@@ -40,12 +126,14 @@ const TaskModal = ({ isVisible, task, onClose, onCompleteTask }) => {
                     </TouchableOpacity>
                 </View>
                 <View style = {styles.titleContainer}>
-                    <Text style = {styles.titleText}>{task.task}</Text>
+                    <Text style = {styles.titleText}>{task.TaskName}</Text>
                 </View>
                 <View style= {styles.dateContainer}>
                     <View >
                         <Text style={styles.dateText}>Date</Text>
-                        <Text style={styles.pfpText}>May 15, 2023</Text>
+                        <Text style={styles.pfpText}>
+                        {`${(new Date(task.DatePublished).getMonth() + 1).toString().padStart(2, '0')}/${new Date(task.DatePublished).getFullYear().toString().substr(-2)}`}
+                        </Text>
                     </View>
                     <View alignItems= {'center'}>
                         <Text style = {styles.dateText}>
@@ -56,26 +144,27 @@ const TaskModal = ({ isVisible, task, onClose, onCompleteTask }) => {
                 </View>
                 <View>
                     <Text style = {styles.dateText}>Description</Text>
-                    <Text style = {styles.descriptionText}>{task.description}</Text>
+                    <Text style = {styles.descriptionText}>{task.TextDescription}</Text>
                 </View>
                 <View marginTop = {deviceHeight/35} marginBottom = {deviceHeight/35}>
                     <Text style = {styles.dateText}>Point Total</Text>
-                    <Text style = {styles.descriptionText}>{task.points}</Text>
+                    <Text style = {styles.descriptionText}>{task.TaskPoints}</Text>
                 </View>
-                {(!task.questions || task.questions.length === 0) ? (
+                {(questions.length === 0) ? (
                     <View marginBottom = {deviceHeight/45}>
                         <TextInput 
-                        style = {styles.oneInput}
-                        value={answers[0]} 
-                        onChangeText={text => handleInputChange(text, 0)}
-                        placeholder={`Your Answer`}
-                        keyboardType="numeric"
+                            style = {styles.oneInput}
+                            value={answers.length > 0 ? answers[0] : ''} 
+                            onChangeText={text => handleInputChange(text, 0)}
+                            placeholder={`Your Answer`}
+                            keyboardType="numeric"
                         />
+
                     </View>
                     ) : (
-                    task.questions.map((question, i) => (
+                    questions.map((question, i) => (
                         <View key={i} marginBottom = {deviceHeight/45}>
-                        <Text style = {styles.inputText}>{question.text}</Text>
+                        <Text style = {styles.inputText}>{question.question_text}</Text>
                         <TextInput 
                             style = {styles.input}
                             value={answers[i]} 

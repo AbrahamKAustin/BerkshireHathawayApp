@@ -47,7 +47,7 @@ const TasksPage = ({ route, navigation }) => {
         setTasks([]);
       }
   }, [post.TeamId]);
-  
+  console.log('Task Data', tasks)
   const [taskCompletions, setTaskCompletions] = useState([]);  
 
   useEffect(() => {
@@ -75,15 +75,7 @@ const TasksPage = ({ route, navigation }) => {
   
 
     const [selectedTask, setSelectedTask] = useState(null);
-    const selectedTaskData = selectedTask ? tasks.find(task => task.TaskId === selectedTask.TaskId) : null;
-    const completeTask = (taskId) => {
-      setGroup((prevState) => {
-        const newTasks = prevState.tasks.map((task) =>
-          task.id === taskId ? { ...task, isCompleted: true } : task
-        );
-  
-        return { ...prevState, tasks: newTasks };
-      });};
+
     
     const [filter, setFilter] = useState('all');
     const [allTasksActive, setAllTasksActive] = useState(true);
@@ -133,7 +125,6 @@ const allTasks = tasks.map(task => {
   
   const isCompleted = taskCompletion ? taskCompletion.CompletionStatus === 1 : false;
   
-  // Return a new object with the task data and the added isCompleted property
   return { ...task, isCompleted };
 });
 console.log('allTasks', allTasks);
@@ -241,11 +232,13 @@ for(let i = 0; i < allTasks.length; i++) {
         {selectedTask && 
           <TaskModal 
             isVisible={!!selectedTask} 
-            task={selectedTaskData} 
+            task={selectedTask ? tasks.find(task => task.TaskId === selectedTask.TaskId) : null} 
             onClose={() => setSelectedTask(null)}
-            onCompleteTask={completeTask} 
+            post ={post}
           />
         }
+
+
     </View>
   );
 };

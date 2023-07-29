@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -10,76 +10,14 @@ import {
   SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-
+import { LeaderboardContext } from "./LeaderboardContext";
+import { UserContext } from "./UserContext";
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
-const LeaderboardPage = ({ navigation }) => {
-  const [group, setGroup] = useState({
-    name: "Battle of the Generations",
-    tasks: [
-      { 
-        id: 1, 
-        task: 'Meaningful Connections', 
-        points: 234
-      },
-      { 
-        id: 2, 
-        task: 'Buyer Contract', 
-
-      },
-      { 
-        id: 3, 
-        task: 'Social Posts', 
-
-      },
-      { 
-        id: 4, 
-        task: 'Hours Prospecting', 
-        points:2345
-      },
-      { 
-        id: 5, 
-        task: 'Direct Mail', 
-
-      },
-      { 
-        id: 6, 
-        task: 'Buyer Consultations', 
-
-      },
-      { 
-        id: 7, 
-        task: 'Prospecting Types', 
-
-      },
-      { 
-        id: 8, 
-        task: 'Leads', 
-
-      },
-      { 
-        id: 9, 
-        task: "Seller's Appointments", 
-
-      },
-      { 
-        id: 10, 
-        task: 'Listing Appointments', 
-
-      },
-      { 
-        id: 11, 
-        task: 'Buyer/Tenant Homes', 
-
-      },
-      { 
-        id: 12, 
-        task: 'Open House Attendees', 
-
-      },
-    ],
-  });
+const LeaderboardPage = ({ route, navigation }) => {
+  const {groupRankings} = useContext(LeaderboardContext);
+  const { post } = route.params;
 
 
       const FloatingNavBar = ({ navigation }) => {
@@ -87,27 +25,23 @@ const LeaderboardPage = ({ navigation }) => {
           <SafeAreaView style={styles.navBarContainer}>
             <TouchableOpacity
               style={styles.navBarButton}
-              onPress={() => navigation.navigate("TasksPage")}>
+              onPress={() => navigation.navigate("TasksPage", {post})}>
               <Icon name="calendar" size={deviceHeight / 38} color="#670038" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.selectedNavBarButton}
-              onPress={() => navigation.navigate("LeaderboardPage")}>
+              onPress={() => navigation.navigate("LeaderboardPage", {post})}>
               <Icon name="podium" size={deviceHeight / 38} color="white" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.navBarButton}
-              onPress={() => navigation.navigate("AnalyticsPage")}>
+              onPress={() => navigation.navigate("AnalyticsPage", {post})}>
               <Icon name="trending-up" size={deviceHeight / 38} color="#670038" />
             </TouchableOpacity>
           </SafeAreaView>
         );
       };
-        
-    let realtors = [];
-    for(let i = 0; i < group.tasks.length; i++) {
-        realtors.push(group.tasks[i]);
-    }
+      
 
   return (
     <View style = {styles.container}>
@@ -121,72 +55,72 @@ const LeaderboardPage = ({ navigation }) => {
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
                   <Text style={styles.titleText}>LEADERBOARD</Text>
-                  <Text style={styles.groupText}>{group.name}</Text>
+                  <Text style={styles.groupText}>{post.TeamName}</Text>
                 </View>
             </View>
 
 
             <View style={styles.topThree}>
-                <View style = {styles.twoContainer}>
-                    <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
-                    <Text style= {styles.topThreeName}> Liz Goodchild</Text>
-                    <Text style= {styles.topThreePoints}> {group.tasks.find(task => task.id === 2)?.points || 0}</Text>
-                    <TouchableOpacity style = {styles.silverContainer}>
-                        <Text style = {styles.twoText}>2</Text>
+              <View style={styles.twoContainer}>
+                <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                <Text style={styles.topThreeName}>{groupRankings[1]?.name}</Text>
+                <Text style={styles.topThreePoints}>{groupRankings[1]?.points}</Text>
+                <TouchableOpacity style={styles.silverContainer}>
+                  <Text style={styles.twoText}>2</Text>
+                </TouchableOpacity>
+              </View>
 
-                    </TouchableOpacity>
-
-                </View>
-                <View style = {styles.oneContainer}>
-                    <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
-                    <Text style= {styles.topThreeName}> Liz Goodchild</Text>
-                    <Text style= {styles.topThreePoints}> {group.tasks.find(task => task.id === 1)?.points || 0}</Text>
-                    <TouchableOpacity style = {styles.goldContainer}>
-                        <Text style = {styles.oneText}>1</Text>
-                    </TouchableOpacity>
-
-                </View>
-                <View style = {styles.threeContainer}>
-                    <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
-                    <Text style= {styles.topThreeName}> Liz Goodchild</Text>
-                    <Text style= {styles.topThreePoints}> {group.tasks.find(task => task.id === 3)?.points || 0}</Text>
-                    <TouchableOpacity style = {styles.bronzeContainer}>
-                        <Text style = {styles.threeText}>3</Text>
-
-                    </TouchableOpacity>
-
-                </View>
-
+              <View style={styles.oneContainer}>
+                <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                <Text style={styles.topThreeName}>{groupRankings[0]?.name}</Text>
+                <Text style={styles.topThreePoints}>{groupRankings[0]?.points}</Text>
+                <TouchableOpacity style={styles.goldContainer}>
+                  <Text style={styles.oneText}>1</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.threeContainer}>
+                <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                <Text style={styles.topThreeName}>{groupRankings[2]?.name}</Text>
+                <Text style={styles.topThreePoints}>{groupRankings[2]?.points}</Text>
+                <TouchableOpacity style={styles.bronzeContainer}>
+                  <Text style={styles.threeText}>3</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.normalRealtorsContainer}>
-            {realtors.map((task) => {
-                if (task.id >= 4) {
-
-                    return (
-                        <TouchableOpacity style = {styles.normalRealtor} onPress={() => navigation.navigate("Home")}>
-                            <View style = {styles.top}>
-                                <View width = '10%' marginRight = {deviceWidth/30}>
-                                        <Text style = {styles.rankText}> {task.id}</Text>
-                                </View>
-                                <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
-                                <View width = '53%' marginLeft = {deviceWidth/30}>
-                                    <Text style = {styles.normalNameText}> {task.task}</Text>
-                                </View>
-                                <Text style = {styles.normalPointsText}> {task.points || 0}</Text>
-                            </View>
-                            <View style = {styles.bottom}>
-                                <Text style = {styles.viewStatsText}>View stats</Text>
-                                <View style={{flex: 2/3, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: deviceWidth/9.5}}>
-                                    <Image style={{ width: '100%', height: '100%', resizeMode: 'contain' }} source={require("../assets/niceArrow.png")} />
-                                </View>
-
-                            </View>       
-                        </TouchableOpacity>                    
-                    );
+              {groupRankings.map((ranking, index) => {
+                if (index >= 3) {
+                  return (
+                    <TouchableOpacity style={styles.normalRealtor} onPress={() => navigation.navigate("Home")}>
+                      <View style={styles.top}>
+                        <View width="10%" marginRight={deviceWidth / 30}>
+                          <Text style={styles.rankText}>{index + 1}</Text>
+                        </View>
+                        <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                        <View width="53%" marginLeft={deviceWidth / 30}>
+                          <Text style={styles.normalNameText}>{ranking.name}</Text>
+                        </View>
+                        <Text style={styles.normalPointsText}>{ranking.points}</Text>
+                      </View>
+                      <View style={styles.bottom}>
+                        <Text style={styles.viewStatsText}>View stats</Text>
+                        <View style={{
+                          flex: 2 / 3,
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginLeft: deviceWidth / 9.5
+                        }}>
+                          <Image style={{ width: '100%', height: '100%', resizeMode: 'contain' }} source={require("../assets/niceArrow.png")} />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  );
                 }
-            })}
+              })}
             </View>
+
         </ScrollView>
 
         <FloatingNavBar navigation={navigation} />

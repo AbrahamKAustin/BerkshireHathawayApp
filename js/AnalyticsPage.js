@@ -15,7 +15,8 @@ import Icon from "react-native-vector-icons/Ionicons";
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
-const AnalyticsPage = ({ navigation }) => {
+const AnalyticsPage = ({ route, navigation }) => {
+  const { post } = route.params;
   const [group, setGroup] = useState({
     name: "Battle of the Generations",
     tasks: [
@@ -92,17 +93,17 @@ const AnalyticsPage = ({ navigation }) => {
       <SafeAreaView style={styles.navBarContainer}>
         <TouchableOpacity
           style={styles.navBarButton}
-          onPress={() => navigation.navigate("TasksPage")}>
+          onPress={() => navigation.navigate("TasksPage", {post})}>
           <Icon name="calendar" size={deviceHeight / 38} color="#670038" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navBarButton}
-          onPress={() => navigation.navigate("LeaderboardPage")}>
+          onPress={() => navigation.navigate("LeaderboardPage", {post})}>
           <Icon name="podium" size={deviceHeight / 38} color="#670038" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.selectedNavBarButton}
-          onPress={() => navigation.navigate("AnalyticsPage")}>
+          onPress={() => navigation.navigate("AnalyticsPage", {post})}>
           <Icon name="trending-up" size={deviceHeight / 38} color="white" />
         </TouchableOpacity>
       </SafeAreaView>

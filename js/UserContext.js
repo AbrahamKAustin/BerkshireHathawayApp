@@ -35,7 +35,6 @@ export const UserProvider = ({ children }) => {
                     setUserData(data);
                     setIsLoading(false);
 
-                    // After setting user data, set the user role
                     if (data.Role === 1) {
                         setUserRole('Standard');
                     } else if (data.Role === 2) {
@@ -43,7 +42,7 @@ export const UserProvider = ({ children }) => {
                     }
                 })
                 .catch((error) => {
-                    console.error('Fetch error:', error); // Log any fetch errors
+                    console.error('Fetch error:', error);
                     setIsLoading(false);
                 });
             });

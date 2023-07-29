@@ -102,17 +102,17 @@ const TasksPage = ({ route, navigation }) => {
           <SafeAreaView style={styles.navBarContainer}>
             <TouchableOpacity
               style={styles.selectedNavBarButton}
-              onPress={() => navigation.navigate("TasksPage")}>
+              onPress={() => navigation.navigate("TasksPage", {post})}>
               <Icon name="calendar" size={deviceHeight / 38} color="white" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.navBarButton}
-              onPress={() => navigation.navigate("LeaderboardPage")}>
+              onPress={() => navigation.navigate("LeaderboardPage", {post})}>
               <Icon name="podium" size={deviceHeight / 38} color="#670038" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.navBarButton}
-              onPress={() => navigation.navigate("AnalyticsPage")}>
+              onPress={() => navigation.navigate("AnalyticsPage", {post})}>
               <Icon name="trending-up" size={deviceHeight / 38} color="#670038" />
             </TouchableOpacity>
           </SafeAreaView>

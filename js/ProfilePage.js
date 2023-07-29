@@ -30,9 +30,7 @@ const ProfilePage = ({ navigation }) => {
   const { totalPoints, rank, groupRankings} = useContext(LeaderboardContext)
   const [userTeams, setUserTeams] = useState([]); 
   const { userData, isLoading, userRole} = useContext(UserContext);
-  console.log('groupRankings', groupRankings);
-  console.log('userTeams', userTeams);
-  console.log('userData', userData);
+
 
   if (isLoading) {
     return <LoadingScreen />; 

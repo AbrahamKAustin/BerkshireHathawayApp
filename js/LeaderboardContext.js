@@ -37,7 +37,6 @@ export const LeaderboardProvider = ({ children }) => {
         });
       });
     }, []);
-  
     useEffect(() => {
 
       if (leaderboardData && userId) {
@@ -65,7 +64,8 @@ export const LeaderboardProvider = ({ children }) => {
       }
     
       const teamUserPoints = {};
-      
+      const teamUserNames = {};
+    
       leaderboardData.forEach(entry => {
         if (!teamUserPoints[entry.TeamId]) {
             teamUserPoints[entry.TeamId] = {};
@@ -76,6 +76,7 @@ export const LeaderboardProvider = ({ children }) => {
         } else {
             teamUserPoints[entry.TeamId][entry.RealtorId] = entry.Points;
         }
+        teamUserNames[entry.RealtorId] = entry.Name;
       });
     
       const rankings = [];
@@ -85,7 +86,8 @@ export const LeaderboardProvider = ({ children }) => {
         sortedUsers.forEach((RealtorId, index) => {
             rankings.push({
               userId: RealtorId,
-              rank: index + 1,  // ranks are 1-indexed
+              name: teamUserNames[RealtorId], 
+              rank: index + 1,  
               points: teamUserPoints[TeamId][RealtorId],
               TeamId: TeamId
             });

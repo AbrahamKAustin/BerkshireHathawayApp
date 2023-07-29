@@ -184,14 +184,17 @@ class Leaderboard(db.Model):
     realtor = db.relationship('User', backref=db.backref('leaderboard', lazy=True))
     team = db.relationship('Teams', backref=db.backref('leaderboard', lazy=True))
 
+
     def __init__(self, RealtorId, TeamId, Points):
         self.RealtorId = RealtorId
         self.TeamId = TeamId
         self.Points = Points
+    
 
 class LeaderboardSchema(ma.Schema):
     class Meta:
-        fields = ('LeaderboardId', 'RealtorId', 'TeamId', 'Points')
+        fields = ('LeaderboardId', 'RealtorId', 'TeamId', 'Points', 'Name')
+    Name = ma.Function(lambda obj: obj.realtor.Name)
 
 leaderboard_schema = LeaderboardSchema()
 leaderboards_schema = LeaderboardSchema(many=True)
@@ -241,10 +244,10 @@ def register_user():
         realtor_team = Realtor_Teams(new_user.id, team.TeamId)
         db.session.add(realtor_team)
 
-        # Add the user to the leaderboard for the "Battle of the Generations" team
-        leaderboard_entry = Leaderboard(RealtorId=new_user.id, TeamId=team.TeamId, Points=0)
-        db.session.add(leaderboard_entry)
-        db.session.commit()
+    leaderboard_entry = Leaderboard(RealtorId=new_user.id, TeamId=team.TeamId, Points=0, Name=new_user.Name)
+    db.session.add(leaderboard_entry)
+    db.session.commit()
+
 
     return jsonify(user=user_schema.dump(new_user), access_token=access_token), 200
 
@@ -322,7 +325,7 @@ def add_to_team():
     realtor_team = Realtor_Teams(user.id, team.TeamId)
     db.session.add(realtor_team)
 
-    leaderboard_entry = Leaderboard(user.id, team.TeamId, 0)
+    leaderboard_entry = Leaderboard(user.id, team.TeamId, 0, user.Name)
     db.session.add(leaderboard_entry)
 
     team_tasks = Team_Task.query.filter_by(TeamId=team.TeamId).all()

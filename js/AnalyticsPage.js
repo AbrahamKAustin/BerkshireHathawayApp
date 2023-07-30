@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { AuthContext } from "./AuthContext";
 import * as SecureStore from 'expo-secure-store';
+import {AnalyticsRenderComponent} from "./AnalyticsRenderComponent";
 
 
 let deviceHeight = Dimensions.get("window").height;
@@ -141,8 +142,8 @@ const AnalyticsPage = ({ route, navigation }) => {
           </View>
           <View style={styles.analyticsContainer}>
           {tasks.map((task, index) => {
-            const weeklyTask = weeklyAnalytics && weeklyAnalytics[index] ? weeklyAnalytics[index] : null;
-            const monthlyTask = monthlyAnalytics && monthlyAnalytics[index] ? monthlyAnalytics[index] : null;
+            const weeklyTask = weeklyAnalytics.find(item => item.TaskName === task.TaskName) || null;
+            const monthlyTask = monthlyAnalytics.find(item => item.TaskName === task.TaskName) || null;
 
             return (
                 <View key={index} style = {styles.normalSection}>
@@ -152,20 +153,18 @@ const AnalyticsPage = ({ route, navigation }) => {
                       <Text style = {styles.semiAnalyticsTitle}>Past 4 weeks:</Text>
                     </View>
                     <View style = {styles.statsContainer}>
-                        {weeklyTask && weeklyTask.WeeklyData && weeklyTask.WeeklyData.map((weekData, idx) => (
-                            <View key={idx} style={styles.fourStatsContainer}>
-                                <Text style={styles.weekMonthText}>{`W${idx + 1}:`}</Text>
-                                <Text style={styles.weekMonthStatsText}>{weekData ? weekData : 'N/A'}</Text>
-                            </View>
-                        ))}
+                        <View style={styles.fourStatsContainer}>
+                            <Text style={styles.weekMonthText}>W1:</Text>
+                            <Text style={styles.weekMonthStatsText}>{weeklyTask && weeklyTask.analytics.WeeklyTotal ? weeklyTask.analytics.WeeklyTotal : 'N/A'}</Text>
+                        </View>
                     </View>
                     <View style = {{flexDirection: 'row', marginTop: deviceHeight/30}}>
-                      <Text style = {styles.monthAvgTitle}>Monthly Average: </Text>
-                      <Text style = {styles.monthAvgStat}>{monthlyTask ? monthlyTask.MonthlyAverage : 'N/A'}</Text>
+                        <Text style = {styles.monthAvgTitle}>Monthly Average: </Text>
+                        <Text style = {styles.monthAvgStat}>{monthlyTask && monthlyTask.MonthlyAverage ? monthlyTask.MonthlyAverage : 'N/A'}</Text>
                     </View>
                     <View style ={{width: '35%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
                     <View style = {styles.semiTitleContainer}>
-                      <Text style = {styles.semiAnalyticsTitle}>Past 4 months:</Text>
+                        <Text style = {styles.semiAnalyticsTitle}>Past 4 months:</Text>
                     </View>
                     <View style = {styles.statsContainer}>
                         {monthlyTask && monthlyTask.MonthlyData && monthlyTask.MonthlyData.map((monthData, idx) => (
@@ -178,6 +177,7 @@ const AnalyticsPage = ({ route, navigation }) => {
                 </View>
             );
         })}
+
 
 
             </View>

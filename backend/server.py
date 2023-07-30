@@ -11,7 +11,7 @@ from flask_migrate import Migrate
 from uuid import uuid4
 import os
 from flask import current_app
-
+from sqlalchemy import or_
 app = Flask(__name__)
 
 
@@ -220,6 +220,38 @@ class TaskCompletionSchema(ma.Schema):
 
 task_completion_schema = TaskCompletionSchema()
 task_completions_schema = TaskCompletionSchema(many=True)
+
+class Analytics(db.Model): 
+    __tablename__ = 'analytics'
+    AnalyticsId = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    RealtorId = db.Column(db.String(32), db.ForeignKey('user.id'))
+    TaskId = db.Column(db.Integer, db.ForeignKey('tasks.TaskId'))
+    WeekStartDate = db.Column(db.Date)
+    WeeklyTotal = db.Column(db.Integer)
+    MonthStartDate = db.Column(db.Date)
+    MonthlyAverage = db.Column(db.Integer)
+
+    user = db.relationship('User', backref=db.backref('analytics', lazy=True))
+    task = db.relationship('Tasks', backref=db.backref('analytics', lazy=True))
+
+    def __init__(self, RealtorId, TaskId, WeekStartDate, WeeklyTotal, MonthStartDate, MonthlyAverage):
+        self.RealtorId = RealtorId
+        self.TaskId = TaskId
+        self.WeekStartDate = WeekStartDate
+        self.WeeklyTotal = WeeklyTotal
+        self.MonthStartDate = MonthStartDate
+        self.MonthlyAverage = MonthlyAverage
+
+class AnalyticsSchema(ma.Schema):
+    class Meta:
+        fields = ('AnalyticsId', 'RealtorId', 'TaskId', 'WeekStartDate', 'WeeklyTotal', 'MonthStartDate', 'MonthlyAverage', 'TaskName')
+        
+    TaskName = ma.Function(lambda obj: obj.task.TaskName)
+
+analytics_schema = AnalyticsSchema()
+analytics_schema_many = AnalyticsSchema(many=True)
+
+
 
 @app.route("/register", methods = ['POST'])
 def register_user():
@@ -434,7 +466,7 @@ def get_task_completion(user_id, team_id):
 @app.route("/getQuestions/<task_id>", methods=['GET'])
 @jwt_required()
 def get_Questions(task_id):
-    # Get the questions for the specified task
+
     questions = Questions.query.filter_by(task_id=task_id).all()
 
     if not questions:
@@ -476,6 +508,31 @@ def create_realtor_task(userId):
     db.session.commit()
 
     return realtor_task_schema.jsonify(new_realtor_task)
+
+@app.route("/getAnalytics/<user_id>", methods=['GET'])
+@jwt_required()
+def get_Analytics(user_id):
+    analytics_weekly = db.session.query(Analytics, Tasks.TaskName).join(Tasks, Analytics.TaskId == Tasks.TaskId).filter(
+        Analytics.RealtorId == user_id, 
+        Analytics.WeeklyTotal.isnot(None)
+    ).order_by(Analytics.WeekStartDate.desc()).limit(4).all()
+
+    analytics_monthly = db.session.query(Analytics, Tasks.TaskName).join(Tasks, Analytics.TaskId == Tasks.TaskId).filter(
+        Analytics.RealtorId == user_id, 
+        Analytics.MonthlyAverage.isnot(None)
+    ).order_by(Analytics.MonthStartDate.desc()).limit(4).all()
+
+    if not analytics_weekly and not analytics_monthly:
+        return jsonify({"message": "No analytics found for this user"}), 404
+
+    result_weekly = [{'analytics': analytics_schema.dump(item[0]), 'TaskName': item[1]} for item in analytics_weekly]
+    result_monthly = [{'analytics': analytics_schema.dump(item[0]), 'TaskName': item[1]} for item in analytics_monthly]
+
+    return jsonify({
+        "weekly": result_weekly, 
+        "monthly": result_monthly
+    })
+
 
 
 if __name__ == "__main__":

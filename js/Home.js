@@ -25,6 +25,8 @@ const Home = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const userToken = authContext.userToken;
   const userId = userToken ? userToken.sub : null;
+  
+
   useEffect(() => {
     SecureStore.getItemAsync('jwt').then(token => {
       fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/user_teams/' + userId, {

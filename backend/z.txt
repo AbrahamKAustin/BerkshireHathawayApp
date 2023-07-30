@@ -14,3 +14,57 @@ Flask-JWT-Extended
 
 react native
 expo-secure-storage
+
+CREATE TABLE Analytics (
+    PerformanceId INT PRIMARY KEY AUTO_INCREMENT,
+    RealtorId VARCHAR(32),
+    TaskId INT,
+    WeekStartDate DATE,
+    WeeklyTotal INT,
+    MonthStartDate DATE,
+    MonthlyAverage INT,
+    FOREIGN KEY (RealtorId) REFERENCES User(id),
+    FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId)
+);
+
+
+procedures:
+CREATE DEFINER=``@`localhost` PROCEDURE `CalculateMonthlyAverage`()
+BEGIN
+  UPDATE Analytics
+  SET MonthStartDate = DATE_FORMAT(NOW() ,'%Y-%m-01'),
+      MonthlyAverage = (SELECT AVG(WeeklyTotal) 
+                        FROM (SELECT RealtorId, TaskId, WeeklyTotal
+                              FROM TaskPerformance
+                              WHERE MonthStartDate = DATE_FORMAT(NOW() ,'%Y-%m-01') 
+                              AND RealtorId = TaskPerformance.RealtorId 
+                              AND TaskId = TaskPerformance.TaskId
+                             ) as subquery)
+  WHERE MonthStartDate = DATE_FORMAT(NOW() ,'%Y-%m-01');
+END
+
+
+CREATE DEFINER= ``@`localhost` PROCEDURE 'CalculateWeeklyTotal'()
+BEGIN
+  INSERT INTO Analytics (RealtorId, TaskId, WeekStartDate, WeeklyTotal)
+  SELECT RealtorId, TaskId, DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) as WeekStartDate,
+         SUM(NumericAnswer) as WeeklyTotal
+  FROM Realtor_Task
+  WHERE WEEKOFYEAR(DatePublished) = WEEKOFYEAR(CURDATE())
+  GROUP BY RealtorId, TaskId;
+END
+
+
+Script:
+SET GLOBAL event_scheduler = ON;
+[mysqld]
+event_scheduler=ON
+
+
+CREATE EVENT IF NOT EXISTS weekly_total_event
+ON SCHEDULE EVERY 1 WEEK STARTS CURRENT_DATE()
+DO CALL CalculateWeeklyTotal();
+
+CREATE EVENT IF NOT EXISTS monthly_average_event
+ON SCHEDULE EVERY 1 MONTH STARTS CURRENT_DATE()
+DO CALL CalculateMonthlyAverage();

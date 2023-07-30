@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -11,82 +11,79 @@ import {
   ScrollView
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { AuthContext } from "./AuthContext";
+import * as SecureStore from 'expo-secure-store';
+
 
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const AnalyticsPage = ({ route, navigation }) => {
+  const authContext = useContext(AuthContext);
+  const userToken = authContext.userToken;
+  const userId = userToken ? userToken.sub : null;
   const { post } = route.params;
-  const [group, setGroup] = useState({
-    name: "Battle of the Generations",
-    tasks: [
-      { 
-        id: 1, 
-        task: 'Meaningful Connections', 
-        points: 234
-      },
-      { 
-        id: 2, 
-        task: 'Buyer Contract', 
+  const [weeklyAnalytics, setWeeklyAnalytics] = useState(null);
+  const [monthlyAnalytics, setMonthlyAnalytics] = useState(null);
 
-      },
-      { 
-        id: 3, 
-        task: 'Social Posts', 
+  useEffect(() => {
+    SecureStore.getItemAsync('jwt').then(token => {
+      fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/getAnalytics/' + userId, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        setWeeklyAnalytics(data.weekly);
+        setMonthlyAnalytics(data.monthly);
 
-      },
-      { 
-        id: 4, 
-        task: 'Hours Prospecting', 
-        points:2345
-      },
-      { 
-        id: 5, 
-        task: 'Direct Mail', 
+        // Log the task name of the first item in each list
+        if (data.weekly.length > 0) {
+          console.log('First Weekly Task Name', data.weekly[0].TaskName);
+        }
+        if (data.monthly.length > 0) {
+          console.log('First Monthly Task Name', data.monthly[0].TaskName);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    });
+  }, []);
 
-      },
-      { 
-        id: 6, 
-        task: 'Buyer Consultations', 
 
-      },
-      { 
-        id: 7, 
-        task: 'Prospecting Types', 
+  console.log('Weekly Analytics', weeklyAnalytics);
+  console.log('Monthly Analytics', monthlyAnalytics);
 
-      },
-      { 
-        id: 8, 
-        task: 'Leads', 
+  const [tasks, setTasks] = useState([]);  // initialize as empty array
 
-      },
-      { 
-        id: 9, 
-        task: "Seller's Appointments", 
+  useEffect(() => {
+      if (post.TeamId) {
+          SecureStore.getItemAsync('jwt').then(token => {
+              fetch(`https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/team_tasks/${post.TeamId}`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                  }
+              })
+              .then(response => response.json())
+              .then(data => {
+                setTasks(data);                  
+              })
+              .catch((error) => {
+                  console.error('Fetch error:', error);
+              });
+          });
+      } else {
+        setTasks([]);
+      }
+  }, [post.TeamId]);
+  console.log('Task Data', tasks)
 
-      },
-      { 
-        id: 10, 
-        task: 'Listing Appointments', 
-
-      },
-      { 
-        id: 11, 
-        task: 'Buyer/Tenant Homes', 
-
-      },
-      { 
-        id: 12, 
-        task: 'Open House Attendees', 
-
-      },
-    ],
-  });
-
-  let realtors = [];
-  for(let i = 0; i < group.tasks.length; i++) {
-      realtors.push(group.tasks[i]);
-  }
 
   const FloatingNavBar = ({ navigation }) => {
     return (
@@ -110,23 +107,6 @@ const AnalyticsPage = ({ route, navigation }) => {
     );
   };
 
-  const [userData, setUserData] = useState({ groups: [] });
-
-  useEffect(() => {
-    fetchUserDataFromDatabase();
-  }, []);
-
-  const fetchUserDataFromDatabase = () => {
-    const dataFromDatabase = {
-      groups: [
-        {
-          groupName: "Battle of the Generations",
-        },
-      ],
-    };
-
-    setUserData(dataFromDatabase);
-  };
  
   return (
     <View style={styles.container}>
@@ -139,7 +119,7 @@ const AnalyticsPage = ({ route, navigation }) => {
                 <View style={styles.titleContainer}>
                   <Text style={styles.titleText}>ANALYTICS</Text>
                   <Text style={styles.groupText}>
-                    {userData.groups && userData.groups[0] ? userData.groups[0].groupName : ''}
+                    {post.TeamName}
                   </Text>
 
                 </View>
@@ -160,73 +140,46 @@ const AnalyticsPage = ({ route, navigation }) => {
 
           </View>
           <View style={styles.analyticsContainer}>
-            {realtors.map((task) => {
-               
+          {tasks.map((task, index) => {
+            const weeklyTask = weeklyAnalytics && weeklyAnalytics[index] ? weeklyAnalytics[index] : null;
+            const monthlyTask = monthlyAnalytics && monthlyAnalytics[index] ? monthlyAnalytics[index] : null;
 
-                    return (
-                        <View style = {styles.normalSection}>
-                            <Text style = {styles.analyticsTitle}>{task.task}</Text>
-                            <View style ={{width: '50%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
-                            <View style = {styles.semiTitleContainer}>
-                              <Text style = {styles.semiAnalyticsTitle}>Past 4 weeks:</Text>
+            return (
+                <View key={index} style = {styles.normalSection}>
+                    <Text style = {styles.analyticsTitle}>{task.TaskName}</Text>
+                    <View style ={{width: '50%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
+                    <View style = {styles.semiTitleContainer}>
+                      <Text style = {styles.semiAnalyticsTitle}>Past 4 weeks:</Text>
+                    </View>
+                    <View style = {styles.statsContainer}>
+                        {weeklyTask && weeklyTask.WeeklyData && weeklyTask.WeeklyData.map((weekData, idx) => (
+                            <View key={idx} style={styles.fourStatsContainer}>
+                                <Text style={styles.weekMonthText}>{`W${idx + 1}:`}</Text>
+                                <Text style={styles.weekMonthStatsText}>{weekData ? weekData : 'N/A'}</Text>
                             </View>
-                            <View style = {styles.statsContainer}>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>W1:</Text>
-                                <Text style = {styles.weekMonthStatsText}>12</Text>
-                              </View>
-                              <View style ={styles.smallLine}/>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>W2:</Text>
-                                <Text style = {styles.weekMonthStatsText}>17</Text>
-                              </View>
-                              <View style ={styles.smallLine}/>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>W3:</Text>
-                                <Text style = {styles.weekMonthStatsText}>9</Text>
-                              </View>
-                              <View style ={styles.smallLine}/>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>W4:</Text>
-                                <Text style = {styles.weekMonthStatsText}>14</Text>
-                              </View>
+                        ))}
+                    </View>
+                    <View style = {{flexDirection: 'row', marginTop: deviceHeight/30}}>
+                      <Text style = {styles.monthAvgTitle}>Monthly Average: </Text>
+                      <Text style = {styles.monthAvgStat}>{monthlyTask ? monthlyTask.MonthlyAverage : 'N/A'}</Text>
+                    </View>
+                    <View style ={{width: '35%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
+                    <View style = {styles.semiTitleContainer}>
+                      <Text style = {styles.semiAnalyticsTitle}>Past 4 months:</Text>
+                    </View>
+                    <View style = {styles.statsContainer}>
+                        {monthlyTask && monthlyTask.MonthlyData && monthlyTask.MonthlyData.map((monthData, idx) => (
+                            <View key={idx} style={styles.fourStatsContainer}>
+                                <Text style={styles.weekMonthText}>{`M${idx + 1}:`}</Text>
+                                <Text style={styles.weekMonthStatsText}>{monthData ? monthData : 'N/A'}</Text>
                             </View>
+                        ))}
+                    </View>
+                </View>
+            );
+        })}
 
-                            <View style = {{flexDirection: 'row', marginTop: deviceHeight/30}}>
-                              <Text style = {styles.monthAvgTitle}>Monthly Average: </Text>
-                              <Text style = {styles.monthAvgStat}>48</Text>
-                            </View>
-                            <View style ={{width: '35%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
 
-                            <View style = {styles.semiTitleContainer}>
-                              <Text style = {styles.semiAnalyticsTitle}>Past 4 months:</Text>
-                            </View>
-
-                            <View style = {styles.statsContainer}>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>M1:</Text>
-                                <Text style = {styles.weekMonthStatsText}>52</Text>
-                              </View>
-                              <View style ={styles.smallLine}/>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>M2:</Text>
-                                <Text style = {styles.weekMonthStatsText}>46</Text>
-                              </View>
-                              <View style ={styles.smallLine}/>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>M3:</Text>
-                                <Text style = {styles.weekMonthStatsText}>33</Text>
-                              </View>
-                              <View style ={styles.smallLine}/>
-                              <View style = {styles.fourStatsContainer}>
-                                <Text style = {styles.weekMonthText}>M4:</Text>
-                                <Text style = {styles.weekMonthStatsText}>67</Text>
-                              </View>
-                            </View>
-                        </View>                    
-                    );
-                
-            })}
             </View>
       </ScrollView>
       <FloatingNavBar navigation={navigation} />

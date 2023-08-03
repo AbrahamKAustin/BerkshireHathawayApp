@@ -119,11 +119,11 @@ useEffect(() => {
             <Text style={styles.name}>{userData.Name}</Text>
             <Text style={styles.roleText}>{userRole}</Text>
           </View>
-          <Image style={styles.avatar} source={require('../assets/lgoodchild.png')} />
+          <Image style={styles.avatar} source={{uri:'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
         </View>
 
         <View style={styles.profileContainer}>
-          <ImageBackground style={styles.imageBackground} source={require("../assets/suburbanhome.png")}>
+          <ImageBackground style={styles.imageBackground} source={{uri:'https://storage.googleapis.com/berkshirehathawaytestbucket/suburbanhome.png'}}>
       
             <View style = {styles.profileBorderCircle1}/> 
             <View style = {styles.profileBorderCircle2}/>

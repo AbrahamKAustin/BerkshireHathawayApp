@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Button, TextInput, Modal, StyleSheet, Dimensions, TouchableOpacity,
 ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import lgoodchild from "../assets/lgoodchild.png";
 import * as SecureStore from 'expo-secure-store';
 import { AuthContext } from "./AuthContext";
 
@@ -139,7 +138,7 @@ const TaskModal = ({ isVisible, task, onClose, post }) => {
                         <Text style = {styles.dateText}>
                             Assignee
                         </Text>
-                        <Image style={styles.avatar} source={lgoodchild} />
+                        <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
                     </View>
                 </View>
                 <View>

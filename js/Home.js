@@ -99,7 +99,7 @@ const Home = ({ navigation }) => {
               <View style={styles.biggerCircle} />
             </View>
             <View style={styles.topGroupContainer}>
-              <Image style={styles.avatar} source={avatar} />
+              <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}}/>
               <View justifyContent={"center"} padding="2%">
                 <Text style={styles.name}>{post.Publisher}</Text>
                 <Text style={styles.greyName}>{"Posted by"}</Text>
@@ -118,7 +118,7 @@ const Home = ({ navigation }) => {
                 <Text style={styles.greyName}>{"Start Date"}</Text>
               </View>
             </View>
-            <Image style={styles.postImage} source={banner} />
+            <Image style={styles.postImage} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/books.png'}} />
           </TouchableOpacity>
 
           <View style={styles.smallRectangle}>

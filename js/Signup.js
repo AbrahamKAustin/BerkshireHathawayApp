@@ -56,11 +56,11 @@ const Signup = ({navigation}) => {
   };
 
   return (
-    <ImageBackground style={styles.container } source = {require('../assets/cityfamily2.jpg')}>
+    <ImageBackground style={styles.container } source = {{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/cityfamily2.jpg'}}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Icon name="arrow-left" size={deviceHeight / 30} color="#fff" />
       </TouchableOpacity>
-      <Image style={styles.image} source={logo1} />
+      <Image style={styles.image} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/purplelogo.png'}} />
       <Text style={styles.title}>Create an account</Text>
       <View style={styles.inputContainer}>
         <View style={styles.iconInputContainer}>

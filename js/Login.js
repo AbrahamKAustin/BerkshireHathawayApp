@@ -1,9 +1,11 @@
-import React, { useState, useContext} from "react";
+import React, { useState, useContext, useEffect} from "react";
 import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity, ImageBackground,  } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import logo1 from "../assets/purplelogo.png";
 import { AuthContext } from './AuthContext';
 import * as SecureStore from 'expo-secure-store';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import LoadingScreen from "./LoadingScreen";
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
@@ -14,7 +16,33 @@ const Login = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const authContext = useContext(AuthContext);
+  const [fontLoaded, setFontLoaded] = useState(false);
 
+  const fetchFonts = () => {
+    return Font.loadAsync({
+      'manrope-regular': require('../assets/fonts/Manrope/static/Manrope-Regular.ttf'),
+
+    });
+  };
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await fetchFonts();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setFontLoaded(true);
+        SplashScreen.hideAsync();
+      }
+    }
+  
+    prepare();
+  }, []);
+  if (!fontLoaded) { 
+    return <LoadingScreen/>; 
+  }
   const handleLogin = () => {
     const opts = {
       method: "POST",
@@ -61,11 +89,11 @@ const Login = ({navigation}) => {
   };
 
   return (
-    <ImageBackground style={styles.container} source = {require('../assets/cityfamily1.jpg')}>
+    <ImageBackground style={styles.container} source = {{uri : 'https://storage.googleapis.com/berkshirehathawaytestbucket/cityfamily1.jpg'}}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Icon name="arrow-left" size={deviceHeight / 30} color="#552448" />
       </TouchableOpacity>
-      <Image style={styles.image} source={logo1} />
+      <Image style={styles.image} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/purplelogo.png'}} />
       <View style={styles.inputContainer}>
         <View style={styles.iconInputContainer}>
           <Icon name="envelope" size={deviceHeight / 38} color="#ccc" style={styles.inputIcon} />

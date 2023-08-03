@@ -42,7 +42,10 @@ const LeaderboardPage = ({ route, navigation }) => {
         );
       };
       
-
+      const handleOtherAnalytics = (userId, post, name, points, rank) => {
+        navigation.navigate('OtherUserAnalytics', {userId, ...post, name, points, rank});
+      };
+      
   return (
     <View style = {styles.container}>
         <ScrollView style={styles.todoContainer}>
@@ -62,24 +65,24 @@ const LeaderboardPage = ({ route, navigation }) => {
 
             <View style={styles.topThree}>
               <View style={styles.twoContainer}>
-                <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
                 <Text style={styles.topThreeName}>{groupRankings[1]?.name}</Text>
                 <Text style={styles.topThreePoints}>{groupRankings[1]?.points}</Text>
-                <TouchableOpacity style={styles.silverContainer}>
+                <TouchableOpacity style={styles.silverContainer} onPress={() => handleOtherAnalytics(groupRankings[1]?.userId, post)}>
                   <Text style={styles.twoText}>2</Text>
                 </TouchableOpacity>
               </View>
 
               <View style={styles.oneContainer}>
-                <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
                 <Text style={styles.topThreeName}>{groupRankings[0]?.name}</Text>
                 <Text style={styles.topThreePoints}>{groupRankings[0]?.points}</Text>
-                <TouchableOpacity style={styles.goldContainer}>
+                <TouchableOpacity style={styles.goldContainer} onPress={() => handleOtherAnalytics(groupRankings[0]?.userId, {post}, groupRankings[0]?.name, groupRankings[0]?.points, 1)}>
                   <Text style={styles.oneText}>1</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.threeContainer}>
-                <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
                 <Text style={styles.topThreeName}>{groupRankings[2]?.name}</Text>
                 <Text style={styles.topThreePoints}>{groupRankings[2]?.points}</Text>
                 <TouchableOpacity style={styles.bronzeContainer}>
@@ -97,7 +100,7 @@ const LeaderboardPage = ({ route, navigation }) => {
                         <View width="10%" marginRight={deviceWidth / 30}>
                           <Text style={styles.rankText}>{index + 1}</Text>
                         </View>
-                        <Image style={styles.avatar} source={require("../assets/suburbanhome.png")} />
+                        <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
                         <View width="53%" marginLeft={deviceWidth / 30}>
                           <Text style={styles.normalNameText}>{ranking.name}</Text>
                         </View>
@@ -112,7 +115,7 @@ const LeaderboardPage = ({ route, navigation }) => {
                           justifyContent: 'center',
                           marginLeft: deviceWidth / 9.5
                         }}>
-                          <Image style={{ width: '100%', height: '100%', resizeMode: 'contain' }} source={require("../assets/niceArrow.png")} />
+                          <Image style={{ width: '100%', height: '100%', resizeMode: 'contain' }} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/niceArrow.png'}} />
                         </View>
                       </View>
                     </TouchableOpacity>

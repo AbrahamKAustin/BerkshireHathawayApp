@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import {
   StyleSheet,
   View,
@@ -7,19 +7,46 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import logo2 from "../assets/logo2.png";
-import { Font } from "expo";
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import LoadingScreen from "./LoadingScreen";
+
+
 
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const LoginSignup = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [fontLoaded, setFontLoaded] = useState(false);
+
+  const fetchFonts = () => {
+    return Font.loadAsync({
+      'manrope-regular': require('../assets/fonts/Manrope/static/Manrope-Regular.ttf'),
+    });
+  };
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await fetchFonts();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setFontLoaded(true);
+        SplashScreen.hideAsync();
+      }
+    }
+  
+    prepare();
+  }, []);
+  if (!fontLoaded) { 
+    return <LoadingScreen/>; 
+  }
 
   const handleLogin = () => {
     navigation.navigate('Login');
-  };
+  }; 
 
   const handleSignup = () => {
     navigation.navigate('Signup');
@@ -28,16 +55,16 @@ const LoginSignup = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.circlesContainer}>
-        <Image style={styles.circle} source = {require('../assets/city1.jpg')}/>
+        <Image style={styles.circle} source = {{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/city1.jpg'}}/>
         <View style={styles.borderCircle} />
       </View>
       <View style={styles.smallerCirclesContainer}>
-        <Image style={styles.smallerCircle} source = {require('../assets/city2.png')}/>
+        <Image style={styles.smallerCircle} source = {{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/city2.png'}}/>
         <View style={styles.smallerBorderCircle} />
       </View>
       <View style={styles.logoContainer}>
-        <Image style={styles.image} source={logo2} />
-        <Image style = {styles.goodchildimage} source={require('../assets/thegoodchildteam.png')} />
+        <Image style={styles.image} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/logo2.png'}} />
+        <Image style = {styles.goodchildimage} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/thegoodchildteam.png'}} />
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -157,10 +184,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   loginButtonText: {
+    fontFamily: 'manrope-regular',
     color: "white",
     fontWeight: "bold",
   },
   signupButtonText: {
+    fontFamily: 'manrope-regular',
     color: "#670038",
     fontWeight: "bold",
   },

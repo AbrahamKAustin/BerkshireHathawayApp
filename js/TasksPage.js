@@ -91,12 +91,24 @@ const TasksPage = ({ route, navigation }) => {
         "clipboard",
       ];
       const highPriorityImages = [
-        require("../assets/graph5.png"),
-        require("../assets/graph1.png"),
-        require("../assets/graph2.png"),
-        require("../assets/graph3.png"),
-        require("../assets/graph4.png"),
+        'https://storage.googleapis.com/berkshirehathawaytestbucket/graph5.png',
+        'https://storage.googleapis.com/berkshirehathawaytestbucket/graph1.png',
+        'https://storage.googleapis.com/berkshirehathawaytestbucket/graph2.png',
+        'https://storage.googleapis.com/berkshirehathawaytestbucket/graph3.png',
+        'https://storage.googleapis.com/berkshirehathawaytestbucket/graph4.png',
+        
       ];
+      useEffect(() => {
+        highPriorityImages.forEach(image => {
+          Image.prefetch(image).then(() => {
+            console.log('Image prefetched successfully:', image);
+          }).catch(error => {
+            console.error('Failed to prefetch image:', image, error);
+          });
+        });
+      }, []);
+      
+      
       const FloatingNavBar = ({ navigation }) => {
         return (
           <SafeAreaView style={styles.navBarContainer}>
@@ -188,7 +200,7 @@ for(let i = 0; i < allTasks.length; i++) {
                         if (task.TaskId < 6) {
                             return (
                                 <View style={[styles.highPriorityTask, {backgroundColor: highPriorityBackgroundColors[task.TaskId % 5]}]}>
-                                    <Image source = {highPriorityImages[task.TaskId % 5]} style = {styles.image}/>
+                                    <Image source = {{uri: (highPriorityImages[task.TaskId % 5])}} style = {styles.image}/>
                                     <View style= {styles.textContainer}>
                                         <Text style ={styles.highPriorityText}>{task.TaskName}</Text>
                                     </View> 
@@ -404,11 +416,12 @@ const styles = StyleSheet.create({
   image: {
     borderRadius: deviceWidth/40,
     resizeMode: 'repeat',
+    height: deviceHeight/.8,
     width: deviceWidth/1.2,
     overflow: 'hidden',
     position: 'absolute',
     top: '0%',
-    right: '-190%',
+    right: '-200%',
     transform: [{ rotate: '-23deg' }],
     shadowColor: "#000",
     shadowOffset: {

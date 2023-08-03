@@ -17,7 +17,7 @@ const LoadingScreen = ({ navigation }) => {
     <View style={styles.container}>
 
       <View style={styles.logoContainer}>
-        <Image style={styles.image} source={logo2} />
+        <Image style={styles.image} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/logo2.png'}} />
       </View>
 
     </View>

@@ -9,23 +9,22 @@ import {
   ScrollView
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { AuthContext } from "./AuthContext";
 import * as SecureStore from 'expo-secure-store';
-import { LeaderboardContext } from "./LeaderboardContext";
 
 
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
-const AnalyticsPage = ({ route, navigation }) => {
-  const authContext = useContext(AuthContext);
-  const userToken = authContext.userToken;
-  const userId = userToken ? userToken.sub : null;
-  const { post } = route.params;
+const OtherUserAnalytics = ({ route, navigation }) => {
+
+  const {userId, post, name, points, rank} = route.params;
+  console.log("User Id", userId)
+  console.log("Post Team Id", post.TeamId)
+  console.log("Post", post)
+  console.log("Name", name)
+
   const [weeklyAnalytics, setWeeklyAnalytics] = useState(null);
   const [monthlyAnalytics, setMonthlyAnalytics] = useState(null);
-  const { totalPoints, rank } = useContext(LeaderboardContext);
-
 
   useEffect(() => {
     SecureStore.getItemAsync('jwt').then(token => {
@@ -41,7 +40,6 @@ const AnalyticsPage = ({ route, navigation }) => {
         setWeeklyAnalytics(data.weekly);
         setMonthlyAnalytics(data.monthly);
 
-        // Log the task name of the first item in each list
         if (data.weekly.length > 0) {
           console.log('First Weekly Task Name', data.weekly[0].TaskName);
         }
@@ -59,8 +57,7 @@ const AnalyticsPage = ({ route, navigation }) => {
   console.log('Weekly Analytics', weeklyAnalytics);
   console.log('Monthly Analytics', monthlyAnalytics);
 
-  const [tasks, setTasks] = useState([]);  // initialize as empty array
-
+  const [tasks, setTasks] = useState([]);  
   useEffect(() => {
       if (post.TeamId) {
           SecureStore.getItemAsync('jwt').then(token => {
@@ -86,41 +83,18 @@ const AnalyticsPage = ({ route, navigation }) => {
   console.log('Task Data', tasks)
 
 
-  const FloatingNavBar = ({ navigation }) => {
-    return (
-      <SafeAreaView style={styles.navBarContainer}>
-        <TouchableOpacity
-          style={styles.navBarButton}
-          onPress={() => navigation.navigate("TasksPage", {post})}>
-          <Icon name="calendar" size={deviceHeight / 38} color="#670038" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navBarButton}
-          onPress={() => navigation.navigate("LeaderboardPage", {post})}>
-          <Icon name="podium" size={deviceHeight / 38} color="#670038" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.selectedNavBarButton}
-          onPress={() => navigation.navigate("AnalyticsPage", {post})}>
-          <Icon name="trending-up" size={deviceHeight / 38} color="white" />
-        </TouchableOpacity>
-      </SafeAreaView>
-    );
-  };
-
- 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', }}>
           <View style = {styles.curvedContainer}>
             <View style={styles.topContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("LeaderboardPage", {post})}>
                 <Icon name="arrow-back" size={deviceHeight / 38} color="white" />
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
                   <Text style={styles.titleText}>ANALYTICS</Text>
                   <Text style={styles.groupText}>
-                    {post.TeamName}
+                    {name}
                   </Text>
 
                 </View>
@@ -129,8 +103,8 @@ const AnalyticsPage = ({ route, navigation }) => {
 
             <View style = {styles.bottomOfCurvedContainer}>
               <View style = {styles.curveContainers}>
-                <Text style = {styles.curvedText}> Total Points</Text>
-                <Text style = {styles.curvedText}>{totalPoints}</Text>
+                <Text style = {styles.curvedText}> Points</Text>
+                <Text style = {styles.curvedText}> {points}</Text>
 
               </View>
               <View style = {styles.curveContainers}>
@@ -182,10 +156,8 @@ const AnalyticsPage = ({ route, navigation }) => {
 
 
 
-
             </View>
       </ScrollView>
-      <FloatingNavBar navigation={navigation} />
 
     </View>
   );
@@ -387,4 +359,4 @@ const styles = StyleSheet.create({
   
 });
 
-export default AnalyticsPage;
+export default OtherUserAnalytics;

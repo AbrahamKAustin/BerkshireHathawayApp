@@ -145,6 +145,7 @@ class Team_TaskSchema(ma.Schema):
 
 team_task_schema = Team_TaskSchema()
 team_tasks_schema = Team_TaskSchema(many=True)
+
 class Realtor_Task(db.Model):
     __tablename__ = 'realtor_task'
     RealtorTaskId = db.Column(db.Integer, primary_key=True)
@@ -251,6 +252,18 @@ class AnalyticsSchema(ma.Schema):
 analytics_schema = AnalyticsSchema()
 analytics_schema_many = AnalyticsSchema(many=True)
 
+def add_task_completions_for_user(user_id):
+    realtor_teams = Realtor_Teams.query.filter_by(UserId=user_id).all()
+
+    for realtor_team in realtor_teams:
+        team_id = realtor_team.TeamId
+
+        team_tasks = Team_Task.query.filter_by(TeamId=team_id).all()
+
+        for team_task in team_tasks:
+            task_completion_entry = TaskCompletion(UserId=user_id, TaskId=team_task.TaskId, CompletionStatus=False)
+            db.session.add(task_completion_entry)
+    db.session.commit()
 
 
 @app.route("/register", methods = ['POST'])
@@ -275,8 +288,9 @@ def register_user():
     if team is not None: 
         realtor_team = Realtor_Teams(new_user.id, team.TeamId)
         db.session.add(realtor_team)
+    add_task_completions_for_user(new_user.id)
 
-    leaderboard_entry = Leaderboard(RealtorId=new_user.id, TeamId=team.TeamId, Points=0, Name=new_user.Name)
+    leaderboard_entry = Leaderboard(RealtorId=new_user.id, TeamId=team.TeamId, Points=0)
     db.session.add(leaderboard_entry)
     db.session.commit()
 

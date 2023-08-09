@@ -40,12 +40,7 @@ const OtherUserAnalytics = ({ route, navigation }) => {
         setWeeklyAnalytics(data.weekly);
         setMonthlyAnalytics(data.monthly);
 
-        if (data.weekly.length > 0) {
-          console.log('First Weekly Task Name', data.weekly[0].TaskName);
-        }
-        if (data.monthly.length > 0) {
-          console.log('First Monthly Task Name', data.monthly[0].TaskName);
-        }
+
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -116,8 +111,8 @@ const OtherUserAnalytics = ({ route, navigation }) => {
           </View>
           <View style={styles.analyticsContainer}>
           {tasks.map((task, index) => {
-            const weeklyTask = weeklyAnalytics.find(item => item.TaskName === task.TaskName) || null;
-            const monthlyTask = monthlyAnalytics.find(item => item.TaskName === task.TaskName) || null;
+            const weeklyTask = weeklyAnalytics ? weeklyAnalytics.find(item => item.TaskName === task.TaskName) : null;
+            const monthlyTask = monthlyAnalytics ? monthlyAnalytics.find(item => item.TaskName === task.TaskName) : null;
 
             return (
                 <View key={index} style = {styles.normalSection}>
@@ -173,9 +168,9 @@ const styles = StyleSheet.create({
   curvedContainer:{
     height:deviceHeight/3.9,
     width: deviceWidth,
-    borderBottomLeftRadius: 45, // adjust the value as needed
-    borderBottomRightRadius: 45, // adjust the value as needed
-    backgroundColor: '#670038', // or any other color
+    borderBottomLeftRadius: 45, 
+    borderBottomRightRadius: 45, 
+    backgroundColor: '#670038', 
     marginBottom:deviceHeight/25,
   },
   topContainer: {
@@ -199,8 +194,7 @@ const styles = StyleSheet.create({
   },
   curvedText: {
     fontSize: deviceHeight / 50,
-    fontFamily: "manrope",
-    //fontWeight: "bold",
+    fontFamily: "manrope-extra-light",
     color: "white",
   },
   backButton: {
@@ -216,13 +210,12 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: deviceHeight / 30,
-    fontFamily: "manrope",
-    fontWeight: "semi-bold",
+    fontFamily: "manrope-semi-bold",
     color: "white",
   },
   groupText: {
     fontSize: deviceHeight / 45,
-    fontFamily: "manrope",
+    fontFamily: "manrope-light",
     fontWeight: "light",
     color: "white",
   },
@@ -281,38 +274,34 @@ const styles = StyleSheet.create({
   analyticsTitle: {
     marginTop: deviceHeight/ 150,
     fontSize: deviceHeight / 40,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-bold",
     color: "black",
   },
   semiAnalyticsTitle: {
     fontSize: deviceHeight/ 53 ,
-    fontFamily: "manrope",
+    fontFamily: "manrope-semi-bold",
     color: "#7c7c7c",
   },  
   monthAvgTitle: {
     fontSize: deviceHeight/ 45 ,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-semi-bold",
     color: "black",
   },
   monthAvgStat: {
     fontSize: deviceHeight/ 45 ,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-medium",
     color: "#791248",
   },
   weekMonthText: {
     justifyContent: 'flex-end',
     fontSize: deviceHeight / 48,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-semi-bold",
     color: "black", 
     marginTop: deviceHeight/70,
   },
   weekMonthStatsText: {
-    fontSize: deviceHeight / 48,
-    fontFamily: "manrope",
+    fontSize: deviceHeight / 52,
+    fontFamily: "manrope-regular",
     color: "#791248", 
     marginLeft: deviceWidth/68
   },

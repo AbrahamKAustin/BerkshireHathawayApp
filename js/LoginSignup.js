@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -7,9 +7,8 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import * as Font from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import LoadingScreen from "./LoadingScreen";
+import useFonts from './useFonts';
+import LoadingScreen from './LoadingScreen';
 
 
 
@@ -17,33 +16,11 @@ let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
 const LoginSignup = ({ navigation }) => {
-  const [fontLoaded, setFontLoaded] = useState(false);
+  const fontLoaded = useFonts();
 
-  const fetchFonts = () => {
-    return Font.loadAsync({
-      'manrope-regular': require('../assets/fonts/Manrope/static/Manrope-Regular.ttf'),
-    });
-  };
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await SplashScreen.preventAutoHideAsync();
-        await fetchFonts();
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setFontLoaded(true);
-        SplashScreen.hideAsync();
-      }
-    }
-  
-    prepare();
-  }, []);
-  if (!fontLoaded) { 
-    return <LoadingScreen/>; 
+  if (!fontLoaded) {
+    return <LoadingScreen />;
   }
-
   const handleLogin = () => {
     navigation.navigate('Login');
   }; 
@@ -184,14 +161,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   loginButtonText: {
-    fontFamily: 'manrope-regular',
+    fontFamily: 'manrope-extra-bold',
     color: "white",
-    fontWeight: "bold",
+    fontSize:deviceHeight/58
   },
   signupButtonText: {
-    fontFamily: 'manrope-regular',
+    fontFamily: 'manrope-extra-bold',
     color: "#670038",
-    fontWeight: "bold",
+    fontSize:deviceHeight/58
+
   },
 });
 

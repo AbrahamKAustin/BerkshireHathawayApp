@@ -7,13 +7,13 @@ import { AuthContext } from "./AuthContext";
 export const UserContext = React.createContext({
     userData: null,
     setUserData: () => {},
-    userRole: null, // Add userRole to the context
-    isLoading: true, // Add isLoading to the context
+    userRole: null, 
+    isLoading: true, 
 });
 
 export const UserProvider = ({ children }) => {
     const [userData, setUserData] = useState(null);
-    const [userRole, setUserRole] = useState(null); // Create userRole state
+    const [userRole, setUserRole] = useState(null); 
     const [isLoading, setIsLoading] = useState(true);
     const authContext = useContext(AuthContext);
     const userToken = authContext.userToken;

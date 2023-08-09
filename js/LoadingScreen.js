@@ -5,7 +5,6 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import logo2 from "../assets/logo2.png";
 
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
@@ -42,3 +41,4 @@ const styles = StyleSheet.create({
 });
 
 export default LoadingScreen;
+

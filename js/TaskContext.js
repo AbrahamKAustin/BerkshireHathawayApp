@@ -10,7 +10,7 @@ export const TaskContext = React.createContext({
 });
 
 export const TaskProvider = ({ children }) => {
-    const [tasks, setTasks] = useState([]);  // initialize as empty array
+    const [tasks, setTasks] = useState([]);  
     const [currentTeamId, setCurrentTeamId] = useState(null); 
     const [isLoading, setIsLoading] = useState(false);
     const authContext = useContext(AuthContext);

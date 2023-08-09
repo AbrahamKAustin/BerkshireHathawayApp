@@ -28,8 +28,6 @@ export const LeaderboardProvider = ({ children }) => {
         })
         .then(response => response.json())
         .then(data => {
-          // Here, data is the array of leaderboard entries returned by the server
-          // You can use the setLeaderboardData function to update your context
           setLeaderboardData(data);
         })
         .catch((error) => {
@@ -40,9 +38,7 @@ export const LeaderboardProvider = ({ children }) => {
     useEffect(() => {
 
       if (leaderboardData && userId) {
-        // Filter the leaderboard data for entries with the same user ID
         const userEntries = leaderboardData.filter(entry => entry.RealtorId === userId);
-        // Sum the points of the user's entries
         const points = userEntries.reduce((sum, entry) => sum + entry.Points, 0);
         setTotalPoints(points); 
   

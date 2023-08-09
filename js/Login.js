@@ -1,11 +1,8 @@
-import React, { useState, useContext, useEffect} from "react";
+import React, { useState, useContext} from "react";
 import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity, ImageBackground,  } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from './AuthContext';
-import * as SecureStore from 'expo-secure-store';
-import * as Font from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import LoadingScreen from "./LoadingScreen";
+
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
@@ -13,36 +10,11 @@ const deviceWidth = Dimensions.get('window').width;
 
 
 const Login = ({navigation}) => {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const authContext = useContext(AuthContext);
-  const [fontLoaded, setFontLoaded] = useState(false);
 
-  const fetchFonts = () => {
-    return Font.loadAsync({
-      'manrope-regular': require('../assets/fonts/Manrope/static/Manrope-Regular.ttf'),
-
-    });
-  };
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await SplashScreen.preventAutoHideAsync();
-        await fetchFonts();
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setFontLoaded(true);
-        SplashScreen.hideAsync();
-      }
-    }
-  
-    prepare();
-  }, []);
-  if (!fontLoaded) { 
-    return <LoadingScreen/>; 
-  }
   const handleLogin = () => {
     const opts = {
       method: "POST",
@@ -62,7 +34,6 @@ const Login = ({navigation}) => {
   
       })
       .then(data => {
-        // Assuming the JWT token is inside data.access_token
         const jwt = data.access_token;
         if (jwt) {
           authContext.signIn(jwt);
@@ -73,7 +44,6 @@ const Login = ({navigation}) => {
         }
       })
       .catch(error => {
-        // Handle network errors and failed logins
         console.error('Error:', error);
       });
   };
@@ -151,7 +121,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: deviceHeight / 30,
-    fontFamily: 'manrope',
+    fontFamily: 'manrope-regular',
     fontWeight: "bold",
     color: 'black',
     marginBottom: deviceHeight * 0.025,
@@ -187,6 +157,8 @@ const styles = StyleSheet.create({
     
     backgroundColor: 'white',
     borderRadius: deviceWidth / 10,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: deviceHeight * 0.02,
     paddingVertical: deviceHeight * 0.018,
     paddingHorizontal: deviceWidth * 0.1,
@@ -197,16 +169,18 @@ const styles = StyleSheet.create({
     color: '#670038',
     textAlign: 'center',
     fontSize: deviceHeight / 43,
-    fontWeight: 'bold',
+    fontFamily: 'manrope-bold',
   },
   orText: {
     color: 'white',
+    fontFamily: 'manrope-regular',
     fontSize: deviceHeight / 50,
     marginTop: deviceHeight * 0.02,
   },
   googleText: {
     color: '#670038',
     textAlign: 'center',
+    fontFamily: 'manrope-regular',
     fontSize: deviceHeight / 70,
     marginLeft: deviceWidth * 0.01,
   },
@@ -228,6 +202,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     color: 'white',
+    fontFamily: 'manrope-regular',
     fontSize: deviceHeight / 50,
     textDecorationLine: 'underline',
   },

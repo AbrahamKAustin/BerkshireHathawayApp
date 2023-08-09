@@ -38,7 +38,6 @@ const TaskModal = ({ isVisible, task, onClose, post }) => {
     console.log('Questions', questions)
 
     console.log('task', task);
-  // Assume each task may have multiple questions
   const [answers, setAnswers] = useState(
     task.questions ? task.questions.map(q => q.answer) : []
   );
@@ -242,8 +241,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         fontSize: deviceHeight / 27,
-        fontFamily: "manrope",
-        fontWeight: "bold",
+        fontFamily: "manrope-semi-bold",
         color: "black",
     },
     dateContainer: {
@@ -257,13 +255,13 @@ const styles = StyleSheet.create({
     dateText:{
         //marginLeft: deviceWidth / 30,
         fontSize: deviceHeight / 55,
-        fontFamily: "manrope",
+        fontFamily: "manrope-semi-bold",
         color: "grey",
     },
     pfpText:{
         marginTop: deviceHeight / 35,
         fontSize: deviceHeight / 50,
-        fontFamily: "manrope",
+        fontFamily: "manrope-regular",
         color: "black",
     },
     avatar:{
@@ -275,13 +273,13 @@ const styles = StyleSheet.create({
     descriptionText:{
         marginTop: (deviceHeight / 100),
         fontSize: deviceHeight / 50,
-        fontFamily: "manrope",
+        fontFamily: "manrope-regular",
         color: "black",
     },
     inputText:{
         marginBottom: (deviceHeight / 65),
         fontSize: deviceHeight / 55,
-        fontFamily: "manrope",
+        fontFamily: "manrope-regular",
         color: "black",
     },
     oneInput: {
@@ -341,6 +339,7 @@ const styles = StyleSheet.create({
       buttonText: {
         color: 'white',
         textAlign: 'center',
+        fontFamily: 'manrope-medium',
         fontSize: deviceHeight / 50,
       },
 

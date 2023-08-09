@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity, ImageBackground } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import logo1 from "../assets/purplelogo.png";
+
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
@@ -11,6 +11,7 @@ const Signup = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+
 
   const handleSignUp = () => {
     if (password !== confirm) {
@@ -39,7 +40,7 @@ const Signup = ({navigation}) => {
       if (data.error) {
         console.error('Error:', data.error);
       } else {
-        navigation.navigate('Home');
+        navigation.navigate('Login');
       }
     })
     .catch((error) => {
@@ -67,7 +68,7 @@ const Signup = ({navigation}) => {
           <Icon name="user" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
-            placeholder="Name"
+            placeholder="John Doe"
             onChangeText={setName}
           />
         </View>
@@ -75,7 +76,7 @@ const Signup = ({navigation}) => {
           <Icon name="envelope" size={deviceHeight / 48} color="#ccc" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="johndoe@example.com"
             onChangeText={setEmail}
           />
         </View>
@@ -85,7 +86,7 @@ const Signup = ({navigation}) => {
             style={styles.input}
             placeholder="Password"
             onChangeText={setPassword}
-            secureTextEntry={true} // for password fields
+            secureTextEntry={true} 
           />
         </View>
         <View style={styles.iconInputContainer}>
@@ -94,7 +95,7 @@ const Signup = ({navigation}) => {
             style={styles.input}
             placeholder="Confirm Password"
             onChangeText={setConfirm}
-            secureTextEntry={true} // for password fields
+            secureTextEntry={true} 
           />
         </View>
         <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: deviceHeight / 30,
-    fontFamily: 'Manrope-Bold',
+    fontFamily: 'manrope-bold',
     fontWeight: "bold",
     color: 'white',
     marginBottom: deviceHeight * 0.04,
@@ -178,12 +179,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#552448',
     textAlign: 'center',
+    fontFamily: 'manrope-bold',
     fontSize: deviceHeight / 43,
-    fontWeight: 'bold',
   },
   googleText: {
     color: 'white',
     textAlign: 'center',
+    fontFamily: 'manrope-regular',
     fontSize: deviceHeight / 70,
     marginLeft: deviceWidth * 0.01,
   },
@@ -210,6 +212,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: deviceHeight / 50,
     textDecorationLine: 'underline',
+    fontFamily: 'manrope-regular',
   },
 });
 

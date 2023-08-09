@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { LeaderboardContext } from "./LeaderboardContext";
-import { UserContext } from "./UserContext";
 let deviceHeight = Dimensions.get("window").height;
 let deviceWidth = Dimensions.get("window").width;
 
@@ -68,7 +67,7 @@ const LeaderboardPage = ({ route, navigation }) => {
                 <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
                 <Text style={styles.topThreeName}>{groupRankings[1]?.name}</Text>
                 <Text style={styles.topThreePoints}>{groupRankings[1]?.points}</Text>
-                <TouchableOpacity style={styles.silverContainer} onPress={() => handleOtherAnalytics(groupRankings[1]?.userId, post)}>
+                <TouchableOpacity style={styles.silverContainer} onPress={() => handleOtherAnalytics(groupRankings[1]?.userId, {post}, groupRankings[1]?.name, groupRankings[1]?.points, 2)}>
                   <Text style={styles.twoText}>2</Text>
                 </TouchableOpacity>
               </View>
@@ -85,7 +84,7 @@ const LeaderboardPage = ({ route, navigation }) => {
                 <Image style={styles.avatar} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/profilepicture.png'}} />
                 <Text style={styles.topThreeName}>{groupRankings[2]?.name}</Text>
                 <Text style={styles.topThreePoints}>{groupRankings[2]?.points}</Text>
-                <TouchableOpacity style={styles.bronzeContainer}>
+                <TouchableOpacity style={styles.bronzeContainer} onPress={() => handleOtherAnalytics(groupRankings[2]?.userId, {post}, groupRankings[2]?.name, groupRankings[2]?.points, 3)}>
                   <Text style={styles.threeText}>3</Text>
                 </TouchableOpacity>
               </View>
@@ -95,7 +94,7 @@ const LeaderboardPage = ({ route, navigation }) => {
               {groupRankings.map((ranking, index) => {
                 if (index >= 3) {
                   return (
-                    <TouchableOpacity style={styles.normalRealtor} onPress={() => navigation.navigate("Home")}>
+                    <TouchableOpacity key = {index} style={styles.normalRealtor} onPress={() => handleOtherAnalytics(groupRankings[index]?.userId, {post}, groupRankings[index]?.name, groupRankings[index]?.points, index+1)}>
                       <View style={styles.top}>
                         <View width="10%" marginRight={deviceWidth / 30}>
                           <Text style={styles.rankText}>{index + 1}</Text>
@@ -170,14 +169,12 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: deviceHeight / 30,
-    fontFamily: "manrope",
-    fontWeight: "semi-bold",
+    fontFamily: "manrope-semi-bold",
     color: "white",
   },
   groupText: {
     fontSize: deviceHeight / 45,
-    fontFamily: "manrope",
-    fontWeight: "light",
+    fontFamily: "manrope-light",
     color: "white",
   },
   todoContainer: {
@@ -227,34 +224,29 @@ const styles = StyleSheet.create({
   topThreeName: {
     marginTop:deviceHeight/100,
     fontSize: deviceHeight / 60,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-medium",
     color: "white",
 
 
   },
   topThreePoints: {
     fontSize: deviceHeight / 45,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-light",
     color:'white',
   },
   oneText: {
     fontSize: deviceHeight / 8,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-light",
     color:'white',
   },
   twoText: {
     fontSize: deviceHeight / 12,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-light",
     color:'white',
   },
   threeText: {
     fontSize: deviceHeight / 15,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-light",
     color:'white',
   },
   avatar: {
@@ -327,28 +319,25 @@ const styles = StyleSheet.create({
   },
   normalNameText: {
     fontSize: deviceHeight / 50,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-medium",
     color: "black",
   },
   rankText: {
     fontSize: deviceHeight / 36,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-medium",
     color: "black",
   },
   normalPointsText: {
     justifyContent: 'flex-end',
     fontSize: deviceHeight / 43,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-semi-bold",
     color: "#791248", 
     marginTop: deviceHeight/70,
   },
   viewStatsText: {
     fontSize: deviceHeight / 62,
-    fontFamily: "manrope",
-    color: "#B7B7B7", 
+    fontFamily: "manrope-light",
+    color: "#a7a7a7", 
     marginLeft: deviceWidth/68
   },
   navBarContainer: {

@@ -14,13 +14,12 @@ let deviceWidth = Dimensions.get("window").width;
 import { AuthContext } from "./AuthContext";
 import { useContext } from "react";
 import { useEffect } from "react";
-import avatar from "../assets/lgoodchild.png";
-import banner from "../assets/books.png";
 import * as SecureStore from 'expo-secure-store';
 import { LeaderboardContext } from './LeaderboardContext';
 
 
 const Home = ({ navigation }) => {
+
   const [post, setPost] = useState([]);
   const authContext = useContext(AuthContext);
   const userToken = authContext.userToken;
@@ -47,7 +46,6 @@ const Home = ({ navigation }) => {
   }, []);
   const { totalPoints, rank } = useContext(LeaderboardContext);
 
-
   const FloatingNavBar = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.navBarContainer}>
@@ -67,7 +65,7 @@ const Home = ({ navigation }) => {
   };
 
   const handleContinue = (post) => {
-
+    console.log('Post1', post)
     navigation.navigate('TasksPage', {post});
   };
 
@@ -90,7 +88,7 @@ const Home = ({ navigation }) => {
       </View>
       
       {post && post.map((post, index) => (
-        <>
+        <React.Fragment key={index}>
           <TouchableOpacity style={styles.groupContainer} onPress={() => handleContinue(post)}>
             <View style={styles.smallerCirclesContainer}>
               <View style={styles.smallerCircle} />
@@ -131,7 +129,7 @@ const Home = ({ navigation }) => {
               <Icon name="arrow-forward" size={deviceHeight / 40} color="white" />
             </TouchableOpacity>
           </View>
-        </>
+        </React.Fragment> 
       ))}
 
         <FloatingNavBar navigation={navigation} />
@@ -181,8 +179,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: deviceHeight / 30,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-light",
     color: "black",
   },
   pointContainer: {
@@ -195,7 +192,7 @@ const styles = StyleSheet.create({
   },
   pointText: {
     fontSize: deviceHeight / 80,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "white",
   },
   groupContainer: {
@@ -263,14 +260,13 @@ const styles = StyleSheet.create({
     marginLeft: deviceWidth / 30,
     marginTop: deviceHeight / 80,
     fontSize: deviceHeight / 53,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-semi-bold",
     color: "black",
   },
   greyName: {
     marginLeft: deviceWidth / 30,
     fontSize: deviceHeight / 80,
-    fontFamily: "manrope",
+    fontFamily: "manrope-semi-bold",
     color: "grey",
   },
   midGroupContainer: {
@@ -286,20 +282,14 @@ const styles = StyleSheet.create({
     ellipsizeMode: "tail"
   },
   groupName: {
-    fontSize: deviceHeight / 30,
-    fontFamily: "manrope",
+    fontSize: deviceHeight / 34,
+    fontFamily: "manrope-bold",
     color: "black",
   },
   postImage: {
     width: "100%",
     borderRadius: deviceHeight / 50,
     height: deviceHeight * 0.13,
-    marginTop: deviceHeight * 0.02,
-  },
-  startDate: {
-    fontSize: deviceHeight / 50,
-    fontFamily: "manrope",
-    color: "grey",
     marginTop: deviceHeight * 0.02,
   },
   smallRectangle: {
@@ -321,13 +311,12 @@ const styles = StyleSheet.create({
   },
   rectangleText: {
     fontSize: deviceHeight / 40,
-    fontFamily: "manrope",
+    fontFamily: "manrope-bold",
     color: "black",
-    fontWeight: "bold",
   },
   continueButton: {
-    flexDirection: "row", // added this to layout text and icon horizontally
-    justifyContent: "space-between", // added this to give space between text and icon
+    flexDirection: "row", 
+    justifyContent: "space-between", 
     backgroundColor: "#670038",
     borderRadius: 8,
     padding: deviceWidth * 0.02,
@@ -335,12 +324,12 @@ const styles = StyleSheet.create({
     marginTop: "5%",
     width: "47%",
     height: "45%",
-    alignItems: "center", // added this to align text and icon vertically
+    alignItems: "center", 
   },
 
   continueText: {
     fontSize: deviceHeight / 60,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "white",
   },
   navBarContainer: {

@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { AuthContext } from "./AuthContext";
 import { useContext } from "react";
 import { LeaderboardContext } from './LeaderboardContext';
-import { UserContext, isLoading } from './UserContext';
+import { UserContext } from './UserContext';
 import * as SecureStore from 'expo-secure-store';
 
 import {LoadingScreen} from './LoadingScreen';
@@ -58,11 +58,10 @@ const ProfilePage = ({ navigation }) => {
     console.log('post', post);
 
 const [oldRanks, setOldRanks] = useState({});
-const [teamsWithCHG, setTeamsWithCHG] = useState([]); // to store teams with their change in rank
+const [teamsWithCHG, setTeamsWithCHG] = useState([]); 
 
 useEffect(() => {
   if (post && groupRankings) {
-    // Save the current ranks before updating
     setOldRanks(groupRankings.reduce((acc, ranking) => ({...acc, [ranking.userId]: ranking.rank}), {}));
     const teamsWithRankAndPoints = groupRankings.map(ranking => {
       const team = post.find(p => String(p.TeamId) === String(ranking.TeamId));
@@ -74,13 +73,16 @@ useEffect(() => {
 
 useEffect(() => {
   if (userTeams.length > 0) {
-    const computedTeamsWithCHG = userTeams.map(team => ({
-      ...team,
-      CHG: oldRanks[team.userId] ? oldRanks[team.userId] - team.rank : 0
-    }));
+    const computedTeamsWithCHG = userTeams
+      .filter(team => team.userId === userId) 
+      .map(team => ({
+        ...team,
+        CHG: oldRanks[team.userId] ? oldRanks[team.userId] - team.rank : 0
+      }));
+
     setTeamsWithCHG(computedTeamsWithCHG);
   }
-}, [oldRanks, userTeams]);
+}, [oldRanks, userTeams, userId]); 
 
     
     
@@ -211,8 +213,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: deviceHeight / 30,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-light",
     color: "black",
   },
   avatar: {
@@ -224,13 +225,12 @@ const styles = StyleSheet.create({
   name: {
     marginTop: deviceHeight / 80,
     fontSize: deviceHeight / 53,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-semi-bold",
     color: "black",
   },
   roleText: {
     fontSize: deviceHeight / 80,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "grey",
   },
   profileContainer: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   editText: {
     fontSize: deviceHeight / 70,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "white",
   },
   midProfileContainer: {
@@ -319,12 +319,12 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: deviceHeight / 30,
-    fontFamily: "manrope",
+    fontFamily: "manrope-semi-bold",
     color: "white",
   },
   emailText: {
     fontSize: deviceHeight / 45,
-    fontFamily: "manrope",
+    fontFamily: "manrope-light",
     color: "white",
   },
   profileStats: {
@@ -345,13 +345,12 @@ const styles = StyleSheet.create({
   },
   profileStatsTitle: {
     fontSize: deviceHeight / 47,
-    fontFamily: "manrope",
+    fontFamily: "manrope-semi-bold",
     color: "#918A7B",
-    fontWeight: 'bold',
   },
   profileStatsText: {
     fontSize: deviceHeight / 50,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "#A59E8F",
     marginTop: '1.5%'
   },
@@ -362,7 +361,7 @@ const styles = StyleSheet.create({
   },
   groupsText: {
     fontSize: deviceHeight / 38,
-    fontFamily: "manrope",
+    fontFamily: "manrope-bold",
     fontWeight: "light",
     color: "black",
   },
@@ -388,14 +387,13 @@ const styles = StyleSheet.create({
   },
   group1Text: {
     fontSize: deviceHeight / 40,
-    fontFamily: "manrope",
+    fontFamily: "manrope-bold",
     color: "black",
-    fontWeight: "bold",
     marginTop: '2%'
   },
   group1StatsContainer: {
-    flexDirection: "row", // added this to layout text and icon horizontally
-    justifyContent: "center", // added this to give space between text and icon
+    flexDirection: "row", 
+    justifyContent: "center", 
     backgroundColor: "#670038",
     borderRadius: 14,
     padding: deviceWidth * 0.02,
@@ -403,7 +401,7 @@ const styles = StyleSheet.create({
     marginTop: "9%",
     width: "87%",
     height: "50%",
-    alignItems: "center", // added this to align text and icon vertically
+    alignItems: "center", 
   },
   group1BorderCircle1: {
     position: "absolute",
@@ -440,12 +438,12 @@ const styles = StyleSheet.create({
   },
   group1StatsTitle: {
     fontSize: deviceHeight / 52,
-    fontFamily: "manrope",
+    fontFamily: "manrope-semi-bold",
     color: "white",
   },
   group1StatsText: {
     fontSize: deviceHeight / 52,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "#f1f1f1",
     marginTop: '1.5%'
   },
@@ -510,14 +508,14 @@ const styles = StyleSheet.create({
   },
   group2Text: {
     fontSize: deviceHeight / 40,
-    fontFamily: "manrope",
+    fontFamily: "manrope-bold",
     color: "white",
     fontWeight: "bold",
     marginTop: '2%'
   },
   group2StatsContainer: {
-    flexDirection: "row", // added this to layout text and icon horizontally
-    justifyContent: "center", // added this to give space between text and icon
+    flexDirection: "row", 
+    justifyContent: "center", 
     backgroundColor: "white",
     borderRadius: 14,
     padding: deviceWidth * 0.02,
@@ -525,17 +523,17 @@ const styles = StyleSheet.create({
     marginTop: "9%",
     width: "87%",
     height: "50%",
-    alignItems: "center", // added this to align text and icon vertically
+    alignItems: "center", 
   },
 
   group2StatsTitle: {
     fontSize: deviceHeight / 52,
-    fontFamily: "manrope",
+    fontFamily: "manrope-semi-bold",
     color: "#670038",
   },
   group2StatsText: {
     fontSize: deviceHeight / 52,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "#7C7C7C",
     marginTop: '1.5%'
   },
@@ -559,9 +557,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: deviceHeight / 59,
-    fontFamily: "manrope",
+    fontFamily: "manrope-bold",
     color: "#670038",
-    fontWeight: 'bold',
   },
   navBarContainer: {
     flexDirection: "row",

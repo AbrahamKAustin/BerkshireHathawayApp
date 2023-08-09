@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text, TextInput, Dimensions, Image, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import logo1 from "../assets/logo1.png";
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
@@ -21,8 +20,6 @@ const EditPage = ({navigation}) => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleChangePassword = () => {
-    // handle the password change logic here
-    // for now, let's just log the new password
     console.log(newPassword);
   };
 
@@ -32,7 +29,7 @@ const EditPage = ({navigation}) => {
         <Icon name="arrow-left" size={deviceHeight / 38} color="#fff" />
       </TouchableOpacity>
       <TriangleShape color="#79124A" />
-      <Image style={styles.image} source={logo1} />
+      <Image style={styles.image} source={{uri: 'https://storage.googleapis.com/berkshirehathawaytestbucket/logo1.png'}} />
       <Text style={styles.title}>Change Password</Text>
       <View style={styles.inputContainer}>
         <View style={styles.iconInputContainer}>
@@ -57,7 +54,7 @@ const EditPage = ({navigation}) => {
             style={styles.input}
             placeholder="New Password"
             onChangeText={setNewPassword}
-            secureTextEntry={true} // for password fields
+            secureTextEntry={true} 
           />
         </View>
         <View style={styles.iconInputContainer}>
@@ -66,7 +63,7 @@ const EditPage = ({navigation}) => {
             style={styles.input}
             placeholder="Confirm Password"
             onChangeText={setConfirmPassword}
-            secureTextEntry={true} // for password fields
+            secureTextEntry={true} 
           />
         </View>
         <TouchableOpacity style={styles.signUpButton} onPress={handleChangePassword}>

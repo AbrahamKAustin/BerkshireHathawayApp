@@ -23,7 +23,7 @@ const TasksPage = ({ route, navigation }) => {
   const userToken = authContext.userToken;
   const userId = userToken ? userToken.sub : null;
 
-  const [tasks, setTasks] = useState([]);  // initialize as empty array
+  const [tasks, setTasks] = useState([]); 
 
   useEffect(() => {
       if (post.TeamId) {
@@ -47,7 +47,6 @@ const TasksPage = ({ route, navigation }) => {
         setTasks([]);
       }
   }, [post.TeamId]);
-  console.log('Task Data', tasks)
   const [taskCompletions, setTaskCompletions] = useState([]);  
 
   useEffect(() => {
@@ -135,11 +134,12 @@ const TasksPage = ({ route, navigation }) => {
 const allTasks = tasks.map(task => {
   const taskCompletion = taskCompletions.find(tc => tc.TaskId === task.TaskId);
   
-  const isCompleted = taskCompletion ? taskCompletion.CompletionStatus === 1 : false;
+  const isCompleted = taskCompletion ? taskCompletion.CompletionStatus === true : false;
   
   return { ...task, isCompleted };
 });
-console.log('allTasks', allTasks);
+console.log(taskCompletions);
+
 let incompleteTasksCount = allTasks.filter(task => !task.isCompleted).length;
 let filteredTasks = [];
 for(let i = 0; i < allTasks.length; i++) {
@@ -196,10 +196,10 @@ for(let i = 0; i < allTasks.length; i++) {
             <Text style = {styles.highPriorityTitleText}>High Priority</Text>
             <View style={styles.highPriorityTasksContainer}>
                 <ScrollView horizontal = {true} showsHorizontalScrollIndicator = {false}>
-                    {filteredTasks.map((task) => {
+                    {filteredTasks.map((task, index) => {
                         if (task.TaskId < 6) {
                             return (
-                                <View style={[styles.highPriorityTask, {backgroundColor: highPriorityBackgroundColors[task.TaskId % 5]}]}>
+                                <View key = {index} style={[styles.highPriorityTask, {backgroundColor: highPriorityBackgroundColors[task.TaskId % 5]}]}>
                                     <Image source = {{uri: (highPriorityImages[task.TaskId % 5])}} style = {styles.image}/>
                                     <View style= {styles.textContainer}>
                                         <Text style ={styles.highPriorityText}>{task.TaskName}</Text>
@@ -217,11 +217,11 @@ for(let i = 0; i < allTasks.length; i++) {
 
             <Text style = {styles.normalPriorityTitleText}>Tasks</Text>
             <View style={styles.normalTasksContainer}>
-            {filteredTasks.map((task) => {
+            {filteredTasks.map((task, index) => {
                 if (task.TaskId >= 6) {
 
                     return (
-                        <View style={styles.normalTask}>
+                        <View key = {index} style={styles.normalTask}>
                             <View style={styles.taskLeftContainer}>
                                 <Text style ={styles.normalText}>{task.TaskName}</Text>
                                 <TouchableOpacity style = {styles.normalButton} onPress={() => setSelectedTask(task)}>
@@ -281,13 +281,12 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: deviceHeight / 30,
-    fontFamily: "manrope",
-    fontWeight: "semi-bold",
+    fontFamily: "manrope-semi-bold",
     color: "black",
   },
   groupText: {
     fontSize: deviceHeight / 45,
-    fontFamily: "manrope",
+    fontFamily: "manrope-light",
     fontWeight: "light",
     color: "black",
   },
@@ -311,7 +310,6 @@ const styles = StyleSheet.create({
     marginBottom: deviceHeight/ 45,
   },
   filterButtonActive: {
-    // style for active button
     borderColor:'#670038',
     borderWidth: deviceWidth / 300,
     borderRadius: deviceWidth / 20,
@@ -339,12 +337,12 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontSize: deviceHeight / 70,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "#670038",
   },
   filterTextActive: {
     fontSize: deviceHeight / 70,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "white",
   },
   filterNumber:{
@@ -367,24 +365,23 @@ const styles = StyleSheet.create({
   },
   filterNumberText: {
     fontSize: deviceHeight / 70,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "white",
   },
   filterNumberTextActive: {
     fontSize: deviceHeight / 70,
-    fontFamily: "manrope",
+    fontFamily: "manrope-regular",
     color: "#670038",
   },
   highPriorityTitleText: {
     fontSize: deviceHeight / 48,
-    fontFamily: "manrope",
-    fontWeight: "light",
+    fontFamily: "manrope-medium",
     color: "black",
     marginLeft: '6%',
   },
   normalPriorityTitleText: {
     fontSize: deviceHeight / 48,
-    fontFamily: "manrope",
+    fontFamily: "manrope-medium",
     fontWeight: "light",
     color: "black",
     marginLeft: '6%',
@@ -440,8 +437,7 @@ const styles = StyleSheet.create({
   },
   highPriorityText: {
     fontSize: deviceHeight / 52.5,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-bold",
     color: "#670038",
   },
   highPriorityButton: {
@@ -467,9 +463,8 @@ const styles = StyleSheet.create({
   },
   highPriorityButtonText: {
     fontSize: deviceHeight / 59,
-    fontFamily: "manrope",
+    fontFamily: "manrope-bold",
     color: "#670038",
-    fontWeight: 'bold',
   },
   normalTask: {
     backgroundColor: "white",
@@ -495,8 +490,7 @@ const styles = StyleSheet.create({
   },
   normalText: {
     fontSize: deviceHeight / 52.5,
-    fontFamily: "manrope",
-    fontWeight: "bold",
+    fontFamily: "manrope-bold",
     color: "black",
     position: 'absolute',
     top: '12%',
@@ -525,9 +519,8 @@ const styles = StyleSheet.create({
   },
   normalButtonText: {
     fontSize: deviceHeight / 59,
-    fontFamily: "manrope",
+    fontFamily: "manrope-bold",
     color: "white",
-    fontWeight: 'bold',
   },
   navBarContainer: {
     flexDirection: "row",

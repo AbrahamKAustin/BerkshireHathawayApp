@@ -17,11 +17,14 @@ import LeaderboardPage from './js/LeaderboardPage';
 import LoadingScreen from './js/LoadingScreen';
 import {LeaderboardProvider} from './js/LeaderboardContext'
 import {UserProvider} from './js/UserContext'
-import { AuthContext } from './js/AuthContext';  
+import { AuthContext } from './js/AuthContext';
+
+
 
 const Stack = createStackNavigator();
 
 const App = () => {
+
   const [userToken, setUserToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,11 +33,11 @@ const App = () => {
       .then(token => {
         if (token) {
           const decodedToken = jwtDecode(token);
-          //console.log('Decoded token on load:', decodedToken); // Add this line
+          //console.log('Decoded token on load:', decodedToken);
           const currentTime = Date.now() / 1000;
 
           if (decodedToken.exp < currentTime) {
-            setUserToken(null); // directly set the userToken to null
+            setUserToken(null); 
           } else {
             setUserToken(decodedToken);
           }
@@ -48,7 +51,7 @@ const App = () => {
     signIn: async (token) => {
       await SecureStore.setItemAsync('jwt', token);
       const decodedToken = jwtDecode(token)    
-      //console.log('Decoded token:', decodedToken); // Add this line
+      //console.log('Decoded token:', decodedToken); 
 
       setUserToken(decodedToken);
     },
@@ -91,6 +94,7 @@ const App = () => {
         </NavigationContainer>
       )}
     </AuthContext.Provider>
+
   );
 }
 export default App;

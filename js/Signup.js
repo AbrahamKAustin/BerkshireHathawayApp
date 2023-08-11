@@ -34,7 +34,7 @@ const Signup = ({navigation}) => {
       })
     }
 
-    fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/register', opts)
+    fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/register', opts)
     .then(response => response.json())
     .then(data => {
       if (data.error) {

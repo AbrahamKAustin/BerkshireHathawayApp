@@ -29,7 +29,7 @@ const AnalyticsPage = ({ route, navigation }) => {
 
   useEffect(() => {
     SecureStore.getItemAsync('jwt').then(token => {
-      fetch('https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/getAnalytics/' + userId, {
+      fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/getAnalytics/' + userId, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const AnalyticsPage = ({ route, navigation }) => {
   useEffect(() => {
       if (post.TeamId) {
           SecureStore.getItemAsync('jwt').then(token => {
-              fetch(`https://1c02-2600-1008-a111-a297-c1ef-aa97-3d94-7dd4.ngrok-free.app/team_tasks/${post.TeamId}`, {
+              fetch(`https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/team_tasks/${post.TeamId}`, {
                   method: 'GET',
                   headers: {
                       'Content-Type': 'application/json',

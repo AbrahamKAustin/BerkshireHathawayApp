@@ -280,10 +280,8 @@ def register_user():
     db.session.add(new_user)
     db.session.commit()
 
-    # Create a token for the new user
     access_token = create_access_token(identity=new_user.id)
 
-    # Add the user to the team "Battle of the Generations"
     team = Teams.query.filter_by(TeamName="Battle of the Generations").first()
     if team is not None: 
         realtor_team = Realtor_Teams(new_user.id, team.TeamId)
@@ -367,7 +365,6 @@ def add_to_team():
     if user is None or team is None:
         return jsonify({'error': 'User or team not found'}), 404
 
-    # Associate the user with the team
     realtor_team = Realtor_Teams(user.id, team.TeamId)
     db.session.add(realtor_team)
 
@@ -407,11 +404,8 @@ def add_task_to_team():
 @jwt_required()
 def get_user_teams(user_id):
 
-    # Get the user's id
     user_id = get_jwt_identity()
-    # Get the user's teams
     user_teams = Realtor_Teams.query.filter_by(UserId=user_id).all()
-    # Get the team details
     teams = [Teams.query.get(team.TeamId) for team in user_teams]
 
     return jsonify(teams_schema.dump(teams))
@@ -428,13 +422,11 @@ def get_user_leaderboard():
 @app.route("/user/<user_id>", methods=['GET'])
 @jwt_required()
 def get_user(user_id):
-    # Get the user's id from the JWT
     user_id_from_token = get_jwt_identity()
 
     if user_id_from_token != user_id:
         return jsonify({"message": "Unauthorized"}), 401
 
-    # Get the user's data
     user = User.query.get(user_id)
 
     if user is None:
@@ -445,13 +437,11 @@ def get_user(user_id):
 @app.route("/team_tasks/<team_id>", methods=['GET'])
 @jwt_required()
 def get_team_tasks(team_id):
-    # Query the Team_Task table for entries with the given TeamId
     team_tasks = Team_Task.query.filter_by(TeamId=team_id).all()
 
     if not team_tasks:
         return jsonify({"message": "No tasks found for this team"}), 404
 
-    # Get the tasks details
     tasks = [Tasks.query.get(task.TaskId) for task in team_tasks]
 
     tasks_response = [{column.name: getattr(task, column.name) for column in task.__table__.columns} for task in tasks]
@@ -462,12 +452,10 @@ def get_team_tasks(team_id):
 @app.route("/getTaskCompletion/<team_id>/<user_id>", methods=['GET'])
 @jwt_required()
 def get_task_completion(user_id, team_id):
-    # Get the tasks of the team
     team_tasks = Team_Task.query.filter_by(TeamId=team_id).all()
 
     task_ids = [task.TaskId for task in team_tasks]
 
-    # Query the TaskCompletion table for entries with the given UserId and TaskId
     user_tasks_completion = TaskCompletion.query.filter(TaskCompletion.UserId == user_id, TaskCompletion.TaskId.in_(task_ids)).all()
 
     if not user_tasks_completion:
@@ -503,14 +491,12 @@ def create_realtor_task(userId):
 
     db.session.add(new_realtor_task)
 
-    # Find the corresponding task_completion record and update its CompletionStatus
     task_completion = TaskCompletion.query.filter_by(TaskId=task_id).first()
     if task_completion is not None:
         task_completion.CompletionStatus = True
     else:
         return jsonify({"message": "No matching task_completion record found for the provided TaskId"}), 400
 
-    # Update points in the Leaderboard model
     task_points = Tasks.query.get(task_id).TaskPoints  
     team_id = request.json['TeamId']  
     leaderboard_record = Leaderboard.query.filter_by(RealtorId=userId, TeamId=team_id).first()

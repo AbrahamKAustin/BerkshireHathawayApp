@@ -4,5 +4,6 @@
     "azureFunctions.pythonVenv": "virt310",
     "azureFunctions.projectLanguage": "Python",
     "azureFunctions.projectRuntime": "~4",
-    "debug.internalConsoleOptions": "neverOpen"
+    "debug.internalConsoleOptions": "neverOpen",
+    "java.compile.nullAnalysis.mode": "automatic"
 }

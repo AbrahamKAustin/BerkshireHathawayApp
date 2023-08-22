@@ -13,5 +13,8 @@ Flask-Migrate
 Flask-SQLAlchemy
 marshmallow
 marshmallow-sqlalchemy
+mysqlclient
+PyJWT
 PyMySQL
 SQLAlchemy
+pyodbc

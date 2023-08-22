@@ -34,7 +34,7 @@ const Signup = ({navigation}) => {
       })
     }
 
-    fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/register', opts)
+    fetch('https://goodchildappfunctions.azurewebsites.net/api/register?code=uYahHfS1vagpTiB04AZIAW0I6B2UrToEzT5gTvy9nb0KAzFuBGM8pQ==', opts)
     .then(response => response.json())
     .then(data => {
       if (data.error) {

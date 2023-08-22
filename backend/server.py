@@ -446,7 +446,6 @@ def get_team_tasks(team_id):
 
     tasks_response = [{column.name: getattr(task, column.name) for column in task.__table__.columns} for task in tasks]
 
-    # Return the tasks as JSON
     return jsonify(tasks_response)
 
 @app.route("/getTaskCompletion/<team_id>/<user_id>", methods=['GET'])

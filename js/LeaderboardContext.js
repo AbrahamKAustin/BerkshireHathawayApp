@@ -19,7 +19,7 @@ export const LeaderboardProvider = ({ children }) => {
     
     useEffect(() => {
       SecureStore.getItemAsync('jwt').then(token => {
-        fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/leaderboard', {
+        fetch('https://goodchildappfunctions.azurewebsites.net/api/leaderboard?code=zEScK1IPjhpUesZWFOg5S7owJXG599vqmVDQxj5GvkGrAzFu2nnijg==', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -1,19 +1,31 @@
-from Shared.config import db
+from Shared.config import db, app
 from Shared.models import Realtor_Teams, Team_Task, TaskCompletion
 from flask_jwt_extended import decode_token, get_jwt_identity
+
+from flask_jwt_extended import decode_token
 
 def validate_jwt_token(token_header):
     if not token_header or not token_header.startswith('Bearer '):
         return (False, "Missing or invalid token")
 
     token = token_header.split('Bearer ')[1]
-    
-    try:
-        decoded_token = decode_token(token)
-        user_identity = get_jwt_identity()
-        return (True, user_identity)
-    except Exception as e:
-        return (False, str(e))
+
+    with app.app_context():
+        try:
+            decoded_token = decode_token(token)
+            user_identity = decoded_token['sub']
+            
+            if not user_identity:
+                return (False, "User identity not found in token")
+
+            return (True, user_identity)
+
+        except Exception as e:
+            return (False, str(e))
+
+
+
+
     
 def add_task_completions_for_user(user_id):
     realtor_teams = Realtor_Teams.query.filter_by(UserId=user_id).all()

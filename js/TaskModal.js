@@ -16,7 +16,7 @@ const TaskModal = ({ isVisible, task, onClose, post }) => {
     useEffect(() => {
         if (task) { 
             SecureStore.getItemAsync('jwt').then(token => {
-                fetch(`https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/getQuestions/${task.TaskId}`, {
+                fetch('https://goodchildappfunctions.azurewebsites.net/api/getQuestions/' + task.TaskId + '?code=QkVcBHwJZmsXHQ9pmPHrSi1vojSM2Y_5Z6s2IqPj7-tpAzFuWzR6Jw==', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const TaskModal = ({ isVisible, task, onClose, post }) => {
     SecureStore.getItemAsync('jwt').then(token => {
         let fetchPromises = [];
       if (questions.length === 0) {
-        const fetchPromise = fetch(`https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/createRealtorTask/${userId}`, {
+        const fetchPromise = fetch('https://goodchildappfunctions.azurewebsites.net/api/createRealtorTask/'+userId+'?code=thzM50v634QIqUrIDXa3eFW8mrvLGchAZklMJwwpL2EbAzFuV9PhHw==', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const TaskModal = ({ isVisible, task, onClose, post }) => {
         fetchPromises.push(fetchPromise);
       } else {
         answers.forEach((answer, i) => {
-          const fetchPromise = fetch(`https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/createRealtorTask/${userId}`, {
+          const fetchPromise = fetch('https://goodchildappfunctions.azurewebsites.net/api/createRealtorTask/'+userId+'?code=thzM50v634QIqUrIDXa3eFW8mrvLGchAZklMJwwpL2EbAzFuV9PhHw==', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

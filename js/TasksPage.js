@@ -28,7 +28,7 @@ const TasksPage = ({ route, navigation }) => {
   useEffect(() => {
       if (post.TeamId) {
           SecureStore.getItemAsync('jwt').then(token => {
-              fetch(`https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/team_tasks/${post.TeamId}`, {
+              fetch('https://goodchildappfunctions.azurewebsites.net/api/team_tasks/' + post.TeamId + '?code=XzIMNOOQTjrYWXU5Stf00E9jaqtIy5YVycqEVeTeQVshAzFu2OF7-w==', {
                   method: 'GET',
                   headers: {
                       'Content-Type': 'application/json',
@@ -48,11 +48,12 @@ const TasksPage = ({ route, navigation }) => {
       }
   }, [post.TeamId]);
   const [taskCompletions, setTaskCompletions] = useState([]);  
+  console.log('Task list', tasks);
 
   useEffect(() => {
       if (post.TeamId && userId) { 
           SecureStore.getItemAsync('jwt').then(token => {
-              fetch(`https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/getTaskCompletion/${post.TeamId}/${userId}`, {
+              fetch('https://goodchildappfunctions.azurewebsites.net/api/getTaskCompletion/' + post.TeamId + '/' + userId + '?code=VF70ntc05Q0MGFB1fprVTYHz2DJE1VvBTx5_N4NrTjYMAzFu2vFlqw==', {
                   method: 'GET',
                   headers: {
                       'Content-Type': 'application/json',
@@ -71,7 +72,7 @@ const TasksPage = ({ route, navigation }) => {
         setTaskCompletions([]);
       }
   }, [post.TeamId, userId]); 
-  
+  console.log('Completions', taskCompletions);
 
     const [selectedTask, setSelectedTask] = useState(null);
 
@@ -131,66 +132,59 @@ const TasksPage = ({ route, navigation }) => {
       };
       
   
-const allTasks = tasks.map(task => {
-  const taskCompletion = taskCompletions.find(tc => tc.TaskId === task.TaskId);
-  
-  const isCompleted = taskCompletion ? taskCompletion.CompletionStatus === true : false;
-  
-  return { ...task, isCompleted };
-});
-console.log(taskCompletions);
+      const allTasks = tasks.map(task => {
+        const taskCompletion = taskCompletions.find(tc => tc.TaskId === task.TaskId);
+        const isCompleted = taskCompletion ? taskCompletion.CompletionStatus === true : false;
+        return { ...task, isCompleted };
 
-let incompleteTasksCount = allTasks.filter(task => !task.isCompleted).length;
-let filteredTasks = [];
-for(let i = 0; i < allTasks.length; i++) {
-    if(filter === 'all') {
-    filteredTasks.push(allTasks[i]);
-    } else if(filter === 'incomplete' && !allTasks[i].isCompleted) {
-    filteredTasks.push(allTasks[i]);
-    }
-}
+      });
+      const incompleteTasksCount = allTasks.filter(task => !task.isCompleted).length;
+      
+      let filteredTasks = [];
+      if (filter === 'all') {
+        filteredTasks = [...allTasks];
+      } else if (filter === 'incomplete') {
+        filteredTasks = allTasks.filter(task => !task.isCompleted);
+      }
+      
 
 
-  return (
-    <View style = {styles.container}>
-        <ScrollView style={styles.todoContainer}>
+      return (
+        <View style={styles.container}>
+          <ScrollView style={styles.todoContainer}>
             <View style={styles.topContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+              <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
                 <Icon name="arrow-back" size={deviceHeight / 38} color="black" />
-                </TouchableOpacity>
-                <View style={styles.titleContainer}>
-                  <Text style={styles.titleText}>TASKS</Text>
-                  <Text style={styles.groupText}>{post.TeamName}</Text>
-                </View>
+              </TouchableOpacity>
+              <View style={styles.titleContainer}>
+                <Text style={styles.titleText}>TASKS</Text>
+                <Text style={styles.groupText}>{post.TeamName}</Text>
+              </View>
             </View>
-
+      
             <View style={styles.filters}>
-                <TouchableOpacity 
-                    style={allTasksActive ? styles.filterButtonActive : styles.filterButton} 
-                    onPress={() => {
-                        setFilter('all');
-                        setAllTasksActive(true);
-                        setIncompleteTasksActive(false);
-                    }}
-                >
-                    <Text style={allTasksActive ? styles.filterTextActive : styles.filterText}>ALL</Text>
-                    <View style = {allTasksActive ? styles.filterNumberActive : styles.filterNumber} >
-                        <Text style={allTasksActive ? styles.filterNumberTextActive : styles.filterNumberText}>{allTasks.length}</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    style={incompleteTasksActive ? styles.filterButtonActive : styles.filterButton} 
-                    onPress={() => {
-                        setFilter('incomplete');
-                        setAllTasksActive(false);
-                        setIncompleteTasksActive(true);
-                    }}
-                >
-                    <Text style={incompleteTasksActive ? styles.filterTextActive : styles.filterText}>TO DO</Text>
-                    <View style = {incompleteTasksActive ? styles.filterNumberActive : styles.filterNumber} >
-                        <Text style={incompleteTasksActive ? styles.filterNumberTextActive : styles.filterNumberText}>{incompleteTasksCount}</Text>
-                    </View>
-                </TouchableOpacity>
+              <TouchableOpacity 
+                style={filter === 'all' ? styles.filterButtonActive : styles.filterButton} 
+                onPress={() => setFilter('all')}
+              >
+                <Text style={filter === 'all' ? styles.filterTextActive : styles.filterText}>ALL</Text>
+                <View style={filter === 'all' ? styles.filterNumberActive : styles.filterNumber}>
+                  <Text style={filter === 'all' ? styles.filterNumberTextActive : styles.filterNumberText}>
+                    {allTasks.length}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={filter === 'incomplete' ? styles.filterButtonActive : styles.filterButton} 
+                onPress={() => setFilter('incomplete')}
+              >
+                <Text style={filter === 'incomplete' ? styles.filterTextActive : styles.filterText}>TO DO</Text>
+                <View style={filter === 'incomplete' ? styles.filterNumberActive : styles.filterNumber}>
+                  <Text style={filter === 'incomplete' ? styles.filterNumberTextActive : styles.filterNumberText}>
+                    {incompleteTasksCount}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
 
             <Text style = {styles.highPriorityTitleText}>High Priority</Text>

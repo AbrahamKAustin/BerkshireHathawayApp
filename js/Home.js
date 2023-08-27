@@ -24,11 +24,12 @@ const Home = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const userToken = authContext.userToken;
   const userId = userToken ? userToken.sub : null;
-  
+  const url = 'https://goodchildappfunctions.azurewebsites.net/api/user_teams/' + userId + '?code=nIqArq-St9_Ou6TGbo5rU9cnw45pT96MuK-M-XsfLcdjAzFujMZimA=='
+
 
   useEffect(() => {
     SecureStore.getItemAsync('jwt').then(token => {
-      fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/user_teams/' + userId, {
+      fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
   },
   biggerCirclesContainer: {
     position: "absolute",
-    bottom: "-22%",
+    bottom: "-25%",
     left: "-28%",
     justifyContent: "center",
     alignItems: "center",
@@ -290,7 +291,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: deviceHeight / 50,
     height: deviceHeight * 0.13,
-    marginTop: deviceHeight * 0.02,
+    marginTop: deviceHeight * 0.01,
   },
   smallRectangle: {
     backgroundColor: "#fff",

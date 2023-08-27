@@ -23,7 +23,7 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         if (userId) {
             SecureStore.getItemAsync('jwt').then(token => {
-                fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/user/' + userId, {
+                fetch('https://goodchildappfunctions.azurewebsites.net/api/user/' + userId, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

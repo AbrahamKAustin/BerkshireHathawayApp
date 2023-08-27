@@ -39,7 +39,7 @@ const ProfilePage = ({ navigation }) => {
     console.log('useEffect component rendering');
     if (!userId) return;
     SecureStore.getItemAsync('jwt').then(token => {
-      fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/user_teams/' + userId, {
+      fetch('https://goodchildappfunctions.azurewebsites.net/api/user_teams/' + userId + '?code=nIqArq-St9_Ou6TGbo5rU9cnw45pT96MuK-M-XsfLcdjAzFujMZimA==', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

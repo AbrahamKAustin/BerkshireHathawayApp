@@ -51,7 +51,8 @@ const App = () => {
     signIn: async (token) => {
       await SecureStore.setItemAsync('jwt', token);
       const decodedToken = jwtDecode(token)    
-      //console.log('Decoded token:', decodedToken); 
+      console.log('Decoded token:', decodedToken); 
+      console.log('Token', token)
 
       setUserToken(decodedToken);
     },

@@ -29,7 +29,7 @@ const AnalyticsPage = ({ route, navigation }) => {
 
   useEffect(() => {
     SecureStore.getItemAsync('jwt').then(token => {
-      fetch('https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/getAnalytics/' + userId, {
+      fetch('https://goodchildappfunctions.azurewebsites.net/api/getAnalytics/'+ userId + '?code=YoTqDVnV1p8gA6obmLF1RjP6kwT2C6xC9xbPxp-qQKGKAzFu-szkzQ==', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const AnalyticsPage = ({ route, navigation }) => {
   useEffect(() => {
       if (post.TeamId) {
           SecureStore.getItemAsync('jwt').then(token => {
-              fetch(`https://44b3-2600-1008-a111-a297-9d26-68f5-40e6-29bd.ngrok-free.app/team_tasks/${post.TeamId}`, {
+              fetch('https://goodchildappfunctions.azurewebsites.net/api/team_tasks/' + post.TeamId + '?code=XzIMNOOQTjrYWXU5Stf00E9jaqtIy5YVycqEVeTeQVshAzFu2OF7-w==', {
                   method: 'GET',
                   headers: {
                       'Content-Type': 'application/json',

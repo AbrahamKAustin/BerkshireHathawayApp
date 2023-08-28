@@ -210,7 +210,7 @@ class Analytics(db.Model):
     user = db.relationship('User', backref=db.backref('analytics', lazy=True))
     task = db.relationship('Tasks', backref=db.backref('analytics', lazy=True))
 
-    def __init__(self, RealtorId, TaskId, WeekStartDate, WeeklyTotal, MonthStartDate, MonthlyAverage):
+    def __init__(self, RealtorId, TaskId, WeekStartDate=None, WeeklyTotal=None, MonthStartDate=None, MonthlyAverage=None):
         self.RealtorId = RealtorId
         self.TaskId = TaskId
         self.WeekStartDate = WeekStartDate

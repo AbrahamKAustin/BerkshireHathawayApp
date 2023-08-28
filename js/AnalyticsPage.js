@@ -78,7 +78,15 @@ const AnalyticsPage = ({ route, navigation }) => {
       }
   }, [post.TeamId]);
   console.log('Task Data', tasks)
-
+  const getWeeklyTotalForWeek = (taskName, weekStartDate) => {
+    const analyticsEntry = weeklyAnalytics.find(item => item.TaskName === taskName && item.analytics.WeekStartDate === weekStartDate);
+    return analyticsEntry ? analyticsEntry.analytics.WeeklyTotal : null;
+  };
+  
+  const getMonthlyAverageForMonth = (taskName, monthStartDate) => {
+    const analyticsEntry = monthlyAnalytics.find(item => item.TaskName === taskName && item.analytics.MonthStartDate === monthStartDate);
+    return analyticsEntry ? analyticsEntry.analytics.MonthlyAverage : null;
+  };
 
   const FloatingNavBar = ({ navigation }) => {
     return (
@@ -136,43 +144,51 @@ const AnalyticsPage = ({ route, navigation }) => {
           </View>
           <View style={styles.analyticsContainer}>
           {tasks.map((task, index) => {
-            const weeklyTask = weeklyAnalytics ? weeklyAnalytics.find(item => item.TaskName === task.TaskName) : null;
-            const monthlyTask = monthlyAnalytics ? monthlyAnalytics.find(item => item.TaskName === task.TaskName) : null;
-
             return (
-                <View key={index} style = {styles.normalSection}>
-                    <Text style = {styles.analyticsTitle}>{task.TaskName}</Text>
-                    <View style ={{width: '50%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
-                    <View style = {styles.semiTitleContainer}>
-                        <Text style = {styles.semiAnalyticsTitle}>Past 4 weeks:</Text>
-                    </View>
-                    <View style = {styles.statsContainer}>
-                        {[...Array(4)].map((_, weekIndex) => (
-                            <View key={weekIndex} style={styles.fourStatsContainer}>
-                                <Text style={styles.weekMonthText}>{`W${weekIndex + 1}:`}</Text>
-                                <Text style={styles.weekMonthStatsText}>{weeklyTask && weeklyTask.analytics && weekIndex === 0 ? weeklyTask.analytics.WeeklyTotal : 'N/A'}</Text>
-                            </View>
-                        ))}
-                    </View>
-                    <View style = {{flexDirection: 'row', marginTop: deviceHeight/30}}>
-                        <Text style = {styles.monthAvgTitle}>Monthly Average: </Text>
-                        <Text style = {styles.monthAvgStat}>{monthlyTask && monthlyTask.MonthlyAverage ? monthlyTask.MonthlyAverage : 'N/A'}</Text>
-                    </View>
-                    <View style ={{width: '35%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
-                    <View style = {styles.semiTitleContainer}>
-                        <Text style = {styles.semiAnalyticsTitle}>Past 4 months:</Text>
-                    </View>
-                    <View style = {styles.statsContainer}>
-                        {[...Array(4)].map((_, monthIndex) => (
-                            <View key={monthIndex} style={styles.fourStatsContainer}>
-                                <Text style={styles.weekMonthText}>{`M${monthIndex + 1}:`}</Text>
-                                <Text style={styles.weekMonthStatsText}>{monthlyTask && monthlyTask.MonthlyData && monthlyTask.MonthlyData[monthIndex] ? monthlyTask.MonthlyData[monthIndex] : 'N/A'}</Text>
-                            </View>
-                        ))}
-                    </View>
+              <View key={index} style={styles.normalSection}>
+                <Text style={styles.analyticsTitle}>{task.TaskName}</Text>
+                <View style={{width: '50%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
+                <View style={styles.semiTitleContainer}>
+                  <Text style={styles.semiAnalyticsTitle}>Past 4 weeks:</Text>
                 </View>
+                <View style={styles.statsContainer}>
+                  {[...Array(4)].map((_, weekIndex) => {
+                    const weekStartDate = new Date();
+                    weekStartDate.setDate(weekStartDate.getDate() - (weekIndex * 7));  
+                    const weeklyTotal = getWeeklyTotalForWeek(task.TaskName, weekStartDate.toISOString().split('T')[0]);
+                    return (
+                      <View key={weekIndex} style={styles.fourStatsContainer}>
+                        <Text style={styles.weekMonthText}>{`W${weekIndex + 1}:`}</Text>
+                        <Text style={styles.weekMonthStatsText}>{weeklyTotal ? weeklyTotal : 'N/A'}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+                <View style={{flexDirection: 'row', marginTop: deviceHeight/30}}>
+                  <Text style={styles.monthAvgTitle}>Monthly Average: </Text>
+                  <Text style={styles.monthAvgStat}>{task.analytics && task.analytics.MonthlyAverage ? task.analytics.MonthlyAverage : 'N/A'}</Text>
+                </View>
+                <View style={{width: '35%', height: deviceHeight/500, backgroundColor: '#b7b7b7', marginTop: deviceHeight/90}}/>
+                <View style={styles.semiTitleContainer}>
+                  <Text style={styles.semiAnalyticsTitle}>Past 4 months:</Text>
+                </View>
+                <View style={styles.statsContainer}>
+                  {[...Array(4)].map((_, monthIndex) => {
+                    const monthStartDate = new Date();
+                    monthStartDate.setMonth(monthStartDate.getMonth() - monthIndex);
+                    monthStartDate.setDate(1);  
+                    const monthlyAverage = getMonthlyAverageForMonth(task.TaskName, monthStartDate.toISOString().split('T')[0]); 
+                    return (
+                      <View key={monthIndex} style={styles.fourStatsContainer}>
+                        <Text style={styles.weekMonthText}>{`M${monthIndex + 1}:`}</Text>
+                        <Text style={styles.weekMonthStatsText}>{monthlyAverage ? monthlyAverage : 'N/A'}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
             );
-        })}
+          })}
 
 
 
